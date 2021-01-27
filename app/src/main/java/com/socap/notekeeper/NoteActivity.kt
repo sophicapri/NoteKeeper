@@ -1,28 +1,30 @@
 package com.socap.notekeeper
 
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.findFragment
+import androidx.navigation.findNavController
+import com.socap.notekeeper.databinding.ActivityNoteBinding
+
 
 class NoteActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityNoteBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
+        binding = ActivityNoteBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        binding.contentNote.spinnerCourses
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_note, menu)
         return true
     }
 
