@@ -20,6 +20,8 @@ class NoteActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.contentNote.spinnerCourses
+
+        var courses: List<CourseInfo> = DataManager.instance.courses
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

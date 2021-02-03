@@ -1,8 +1,6 @@
 
 f
 6app/src/main/java/com/socap/notekeeper/NoteActivity.kt,9\d\9d8582b3ec34d4e431421ce88ee3b0516c70f970
-g
-7app/src/main/java/com/socap/notekeeper/FirstFragment.kt,e\7\e76b9144dbb6e903d9d41cdb1e0e54928496f14d
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 <
