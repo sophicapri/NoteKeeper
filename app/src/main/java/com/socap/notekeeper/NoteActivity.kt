@@ -3,6 +3,7 @@ package com.socap.notekeeper
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.findFragment
 import androidx.navigation.findNavController
@@ -19,9 +20,11 @@ class NoteActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.contentNote.spinnerCourses
-
-        var courses: List<CourseInfo> = DataManager.instance.courses
+        val courses: List<CourseInfo> = DataManager.instance.courses
+        val adapterCourses : ArrayAdapter<CourseInfo> =
+            ArrayAdapter(this,android.R.layout.simple_spinner_item, courses)
+        adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.contentNote.spinnerCourses.adapter = adapterCourses
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
