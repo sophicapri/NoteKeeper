@@ -15,10 +15,10 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setSupportActionBar(findViewById(R.id.toolbar))
         binding = ActivityNoteBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        setSupportActionBar(binding.toolbar)
 
         val courses: List<CourseInfo> = DataManager.instance.courses
         val adapterCourses : ArrayAdapter<CourseInfo> =

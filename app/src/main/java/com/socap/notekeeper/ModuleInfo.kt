@@ -46,7 +46,7 @@ class ModuleInfo : Parcelable {
         dest.writeByte((if (isComplete) 1 else 0).toByte())
     }
 
-    companion object {
+  /*  companion object {
         val CREATOR: Parcelable.Creator<ModuleInfo?> = object : Parcelable.Creator<ModuleInfo?> {
             override fun createFromParcel(source: Parcel): ModuleInfo {
                 return ModuleInfo(source)
@@ -55,6 +55,18 @@ class ModuleInfo : Parcelable {
             override fun newArray(size: Int): Array<ModuleInfo?> {
                 return arrayOfNulls(size)
             }
+        }
+    }
+
+   */
+
+    companion object CREATOR : Parcelable.Creator<ModuleInfo> {
+        override fun createFromParcel(parcel: Parcel): ModuleInfo {
+            return ModuleInfo(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ModuleInfo?> {
+            return arrayOfNulls(size)
         }
     }
 }

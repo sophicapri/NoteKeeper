@@ -2,7 +2,7 @@ package com.socap.notekeeper
 
 class NoteInfo(var course: CourseInfo?, var title: String?, var text: String?) {
     private val compareKey: String
-        get() = course?.courseId + "|" + title + "|" + text
+        get() = "${course?.courseId}|$title|$text"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

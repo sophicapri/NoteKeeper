@@ -20,6 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_note_list" />
+    <include android:id="@+id/content_note_list"
+        layout="@layout/content_note_list" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

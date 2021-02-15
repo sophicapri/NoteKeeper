@@ -65,7 +65,7 @@ class DataManager private constructor() {
 
     fun initializeExampleNotes() {
         val dm = instance
-        var course = dm!!.getCourse("android_intents")
+        var course = dm.getCourse("android_intents")
         course?.getModule("android_intents_m01")?.isComplete = true
         course?.getModule("android_intents_m02")?.isComplete = true
         course?.getModule("android_intents_m03")?.isComplete = true
