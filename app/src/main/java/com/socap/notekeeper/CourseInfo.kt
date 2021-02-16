@@ -43,10 +43,10 @@ class CourseInfo : Parcelable {
         return title
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as CourseInfo
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as CourseInfo
         return courseId == that.courseId
     }
 
@@ -64,8 +64,8 @@ class CourseInfo : Parcelable {
         dest.writeTypedList(modules)
     }
 
-  /*  companion object {
-        val CREATOR: Parcelable.Creator<CourseInfo?> = object : Parcelable.Creator<CourseInfo?> {
+    companion object {
+        @JvmField val CREATOR: Parcelable.Creator<CourseInfo?> = object : Parcelable.Creator<CourseInfo?> {
             override fun createFromParcel(source: Parcel): CourseInfo {
                 return CourseInfo(source)
             }
@@ -73,17 +73,6 @@ class CourseInfo : Parcelable {
             override fun newArray(size: Int): Array<CourseInfo?> {
                 return arrayOfNulls(size)
             }
-        }
-    }
-   */
-
-    companion object CREATOR : Parcelable.Creator<CourseInfo> {
-        override fun createFromParcel(parcel: Parcel): CourseInfo {
-            return CourseInfo(parcel)
-        }
-
-        override fun newArray(size: Int): Array<CourseInfo?> {
-            return arrayOfNulls(size)
         }
     }
 }
