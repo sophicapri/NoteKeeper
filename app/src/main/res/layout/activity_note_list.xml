@@ -23,4 +23,11 @@
     <include android:id="@+id/content_note_list"
         layout="@layout/content_note_list" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
