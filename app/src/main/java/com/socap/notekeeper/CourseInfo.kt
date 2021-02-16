@@ -66,13 +66,9 @@ class CourseInfo : Parcelable {
 
     companion object {
         @JvmField val CREATOR: Parcelable.Creator<CourseInfo?> = object : Parcelable.Creator<CourseInfo?> {
-            override fun createFromParcel(source: Parcel): CourseInfo {
-                return CourseInfo(source)
-            }
+            override fun createFromParcel(source: Parcel) = CourseInfo(source)
 
-            override fun newArray(size: Int): Array<CourseInfo?> {
-                return arrayOfNulls(size)
-            }
+            override fun newArray(size: Int) = arrayOfNulls<CourseInfo>(size)
         }
     }
 }

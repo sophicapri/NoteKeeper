@@ -48,13 +48,9 @@ class ModuleInfo : Parcelable {
 
    companion object {
         @JvmField val CREATOR: Parcelable.Creator<ModuleInfo?> = object : Parcelable.Creator<ModuleInfo?> {
-            override fun createFromParcel(source: Parcel): ModuleInfo {
-                return ModuleInfo(source)
-            }
+            override fun createFromParcel(source: Parcel) = ModuleInfo(source)
 
-            override fun newArray(size: Int): Array<ModuleInfo?> {
-                return arrayOfNulls(size)
-            }
+            override fun newArray(size: Int) = arrayOfNulls<ModuleInfo>(size)
         }
     }
 }
