@@ -15,6 +15,9 @@ class NoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteBinding
     private var note: NoteInfo? = null
     private var isNewNote = false
+    private lateinit var spinnerCourses : Spinner
+    private lateinit var textNoteTitle : EditText
+    private lateinit var textNoteText : EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,15 +30,17 @@ class NoteActivity : AppCompatActivity() {
         val adapterCourses: ArrayAdapter<CourseInfo> =
             ArrayAdapter(this, android.R.layout.simple_spinner_item, courses)
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        val spinnerCourses = binding.contentNote.spinnerCourses
+        spinnerCourses = binding.contentNote.spinnerCourses
         spinnerCourses.adapter = adapterCourses
+        textNoteTitle = binding.contentNote.textNoteTitle
+        textNoteText = binding.contentNote.textNoteText
 
         readDisplayStateValues()
         if (!isNewNote)
             displayNote(
                 spinnerCourses,
-                binding.contentNote.textNoteTitle,
-                binding.contentNote.textNoteText
+                textNoteTitle,
+                textNoteText,
             )
     }
 
@@ -55,7 +60,7 @@ class NoteActivity : AppCompatActivity() {
         val intent: Intent = intent
         val position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
         isNewNote = position == POSITION_NOT_SET
-        if(!isNewNote)
+        if (!isNewNote)
             note = DataManager.instance.notes[position]
     }
 
@@ -70,9 +75,25 @@ class NoteActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_send_email -> {
+                sendEmail()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun sendEmail() {
+        val course = spinnerCourses.selectedItem as CourseInfo
+        val subject = textNoteTitle.text.toString()
+        val text = "Check out what I learned in the Pluralsight course \"" +
+                "${course.title}\"\n${textNoteText.text}"
+
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "message/rfc2822"
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        intent.putExtra(Intent.EXTRA_TEXT, text)
+        startActivity(intent)
     }
 
     companion object {

@@ -6,7 +6,7 @@ import java.util.*
 
 class CourseInfo : Parcelable {
     val courseId: String?
-    private val title: String
+    val title: String
     private val modules: List<ModuleInfo>
 
     constructor(courseId: String?, title: String, modules: List<ModuleInfo>) {
