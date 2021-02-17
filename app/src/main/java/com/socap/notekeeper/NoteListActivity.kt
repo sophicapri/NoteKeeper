@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.socap.notekeeper.NoteActivity.Companion.NOTE_INFO
+import com.socap.notekeeper.NoteActivity.Companion.NOTE_POSITION
 import com.socap.notekeeper.databinding.ActivityNoteListBinding
 
 class NoteListActivity : AppCompatActivity() {
@@ -32,10 +30,11 @@ class NoteListActivity : AppCompatActivity() {
             ArrayAdapter(this, android.R.layout.simple_list_item_1, notes)
 
         listNotes.adapter = adapterNotes
+
         listNotes.setOnItemClickListener { _, _, position, l ->
             val intent = Intent(this, NoteActivity::class.java)
-            val note : NoteInfo = listNotes.getItemAtPosition(position) as NoteInfo
-            intent.putExtra(NOTE_INFO, note)
+//            val note : NoteInfo = listNotes.getItemAtPosition(position) as NoteInfo
+            intent.putExtra(NOTE_POSITION, position)
             startActivity(intent)
         }
     }

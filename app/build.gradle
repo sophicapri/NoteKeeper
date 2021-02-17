@@ -20,6 +20,8 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+//            debuggable true
+//            tools:ignore="HardcodedDebugMode"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

@@ -8,8 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.findFragment
-import androidx.navigation.findNavController
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 
 
@@ -55,8 +53,10 @@ class NoteActivity : AppCompatActivity() {
 
     private fun readDisplayStateValues() {
         val intent: Intent = intent
-        note = intent.getParcelableExtra(NOTE_INFO)
-        isNewNote = note == null
+        val position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
+        isNewNote = position == POSITION_NOT_SET
+        if(!isNewNote)
+            note = DataManager.instance.notes[position]
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,6 +76,7 @@ class NoteActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val NOTE_INFO = "com.socap.notekeeper.NOTE_INFO"
+        const val NOTE_POSITION = "com.socap.notekeeper.NOTE_POSITION"
+        const val POSITION_NOT_SET = -1
     }
 }
