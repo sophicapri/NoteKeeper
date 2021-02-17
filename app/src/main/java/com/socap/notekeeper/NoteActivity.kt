@@ -16,6 +16,7 @@ import com.socap.notekeeper.databinding.ActivityNoteBinding
 class NoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteBinding
     private var note: NoteInfo? = null
+    private var isNewNote = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +33,12 @@ class NoteActivity : AppCompatActivity() {
         spinnerCourses.adapter = adapterCourses
 
         readDisplayStateValues()
-        displayNote(
-            spinnerCourses,
-            binding.contentNote.textNoteTitle,
-            binding.contentNote.textNoteText
-        )
+        if (!isNewNote)
+            displayNote(
+                spinnerCourses,
+                binding.contentNote.textNoteTitle,
+                binding.contentNote.textNoteText
+            )
     }
 
     private fun displayNote(
@@ -54,6 +56,7 @@ class NoteActivity : AppCompatActivity() {
     private fun readDisplayStateValues() {
         val intent: Intent = intent
         note = intent.getParcelableExtra(NOTE_INFO)
+        isNewNote = note == null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
