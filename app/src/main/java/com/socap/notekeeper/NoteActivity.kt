@@ -13,11 +13,12 @@ import com.socap.notekeeper.databinding.ActivityNoteBinding
 
 class NoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteBinding
-    private var note: NoteInfo = NoteInfo()
+    private lateinit var note: NoteInfo
     private var isNewNote = false
     private lateinit var spinnerCourses: Spinner
     private lateinit var textNoteTitle: EditText
     private lateinit var textNoteText: EditText
+    private var notePosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,15 +82,16 @@ class NoteActivity : AppCompatActivity() {
         val position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
         isNewNote = position == POSITION_NOT_SET
         if (isNewNote) {
-//            createNewNote()
+            createNewNote()
         } else
             note = DataManager.instance.notes[position]
     }
 
-/*    private fun createNewNote() {
+    private fun createNewNote() {
         val dm : DataManager = DataManager.instance
-        val notePosition = dm.createNewNote()
-    }*/
+        notePosition = dm.createNewNote()
+        note = dm.notes[notePosition]
+    }
 
     private fun displayNote(
         spinnerCourses: Spinner,
