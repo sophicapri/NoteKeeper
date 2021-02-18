@@ -19,6 +19,7 @@ class NoteActivity : AppCompatActivity() {
     private lateinit var textNoteTitle: EditText
     private lateinit var textNoteText: EditText
     private var notePosition = 0
+    private var isCancelling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,13 +56,14 @@ class NoteActivity : AppCompatActivity() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_send_email -> {
-                sendEmail()
-                true
+        when (item.itemId) {
+            R.id.action_send_email -> sendEmail()
+            R.id.action_cancel -> {
+                isCancelling = true
+                finish()
             }
-            else -> super.onOptionsItemSelected(item)
         }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun sendEmail() {
@@ -88,7 +90,7 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun createNewNote() {
-        val dm : DataManager = DataManager.instance
+        val dm: DataManager = DataManager.instance
         notePosition = dm.createNewNote()
         note = dm.notes[notePosition]
     }
@@ -107,7 +109,11 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        saveNote()
+        if (isCancelling) {
+            if (isNewNote)
+                DataManager.instance.removeNote(notePosition)
+        } else
+            saveNote()
     }
 
     private fun saveNote() {
