@@ -32,7 +32,7 @@ class DataManager private constructor() {
     val courses: List<CourseInfo>
         get() = mCourses
 
-    private fun getCourse(id: String): CourseInfo? {
+    fun getCourse(id: String): CourseInfo? {
         for (course in mCourses) {
             if (id == course.courseId) return course
         }

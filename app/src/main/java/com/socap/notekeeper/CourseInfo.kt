@@ -9,7 +9,7 @@ class CourseInfo : Parcelable {
     val title: String
     private val modules: List<ModuleInfo>
 
-    constructor(courseId: String?, title: String, modules: List<ModuleInfo>) {
+    constructor(courseId: String, title: String, modules: List<ModuleInfo>) {
         this.courseId = courseId
         this.title = title
         this.modules = modules

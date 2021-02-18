@@ -20,6 +20,9 @@ class NoteActivity : AppCompatActivity() {
     private lateinit var textNoteText: EditText
     private var notePosition = 0
     private var isCancelling = false
+    private lateinit var originalNoteCourseId : String
+    private lateinit var originalNoteTitle : String
+    private lateinit var originalNoteText : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,7 @@ class NoteActivity : AppCompatActivity() {
         textNoteText = binding.contentNote.textNoteText
 
         readDisplayStateValues()
+        saveOriginalNoteValues()
         if (!isNewNote)
             displayNote(
                 spinnerCourses,
@@ -89,6 +93,15 @@ class NoteActivity : AppCompatActivity() {
             note = DataManager.instance.notes[position]
     }
 
+    private fun saveOriginalNoteValues() {
+        if(isNewNote)
+            return
+        note.course?.courseId?.let { originalNoteCourseId = it }
+        note.title?.let {  originalNoteTitle = it }
+        note.text?.let {  originalNoteText = it }
+
+    }
+
     private fun createNewNote() {
         val dm: DataManager = DataManager.instance
         notePosition = dm.createNewNote()
@@ -112,8 +125,17 @@ class NoteActivity : AppCompatActivity() {
         if (isCancelling) {
             if (isNewNote)
                 DataManager.instance.removeNote(notePosition)
+            else
+                storePreviousNoteValues()
         } else
             saveNote()
+    }
+
+    private fun storePreviousNoteValues() {
+        val course = DataManager.instance.getCourse(originalNoteCourseId)
+        note.course = course
+        note.title = originalNoteTitle
+        note.text = originalNoteText
     }
 
     private fun saveNote() {
