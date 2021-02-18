@@ -10,6 +10,7 @@ import com.socap.notekeeper.databinding.ActivityNoteListBinding
 
 class NoteListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteListBinding
+    private lateinit var adapterNotes : ArrayAdapter<NoteInfo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +24,15 @@ class NoteListActivity : AppCompatActivity() {
         initializeDisplayContent()
     }
 
+    override fun onResume() {
+        super.onResume()
+        adapterNotes.notifyDataSetChanged()
+    }
+
     private fun initializeDisplayContent() {
         val listNotes: ListView = binding.contentNoteList.listNotes
         val notes : List<NoteInfo> = DataManager.instance.notes
-        val adapterNotes : ArrayAdapter<NoteInfo> =
-            ArrayAdapter(this, android.R.layout.simple_list_item_1, notes)
+        adapterNotes = ArrayAdapter(this, android.R.layout.simple_list_item_1, notes)
 
         listNotes.adapter = adapterNotes
 
