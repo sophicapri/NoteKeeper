@@ -13,7 +13,7 @@ class DataManager private constructor() {
         get() = mNotes
 
     fun createNewNote(): Int {
-        val note = NoteInfo(null, null, null)
+        val note = NoteInfo()
         mNotes.add(note)
         return mNotes.size - 1
     }

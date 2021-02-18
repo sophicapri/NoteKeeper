@@ -3,7 +3,7 @@ package com.socap.notekeeper
 import android.os.Parcel
 import android.os.Parcelable
 
-class NoteInfo(var course: CourseInfo?, var title: String?, var text: String?) : Parcelable {
+class NoteInfo(var course: CourseInfo? = null, var title: String? = null, var text: String? = null) : Parcelable {
     private val compareKey: String
         get() = "${course?.courseId}|$title|$text"
 
