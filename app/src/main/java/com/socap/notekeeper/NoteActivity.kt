@@ -44,7 +44,9 @@ class NoteActivity : AppCompatActivity() {
         val adapterCourses: ArrayAdapter<CourseInfo> =
             ArrayAdapter(this, android.R.layout.simple_spinner_item, courses)
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         spinnerCourses = binding.contentNote.spinnerCourses
+
         spinnerCourses.adapter = adapterCourses
         textNoteTitle = binding.contentNote.textNoteTitle
         textNoteText = binding.contentNote.textNoteText
@@ -61,9 +63,7 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if(outState != null){
-            viewModel.saveSate(outState)
-        }
+        viewModel.saveState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

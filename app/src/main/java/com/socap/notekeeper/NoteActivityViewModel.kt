@@ -9,7 +9,7 @@ class NoteActivityViewModel : ViewModel() {
     lateinit var originalNoteText : String
     var isNewlyCreated = true
 
-    fun saveSate(outState: Bundle) {
+    fun saveState(outState: Bundle) {
         outState.putString(ORIGINAL_NOTE_COURSE_ID, originalNoteCourseId)
         outState.putString(ORIGINAL_NOTE_TITLE, originalNoteTitle)
         outState.putString(ORIGINAL_NOTE_TEXT, originalNoteText)
