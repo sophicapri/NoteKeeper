@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 
 
@@ -20,9 +21,7 @@ class NoteActivity : AppCompatActivity() {
     private lateinit var textNoteText: EditText
     private var notePosition = 0
     private var isCancelling = false
-    private lateinit var originalNoteCourseId : String
-    private lateinit var originalNoteTitle : String
-    private lateinit var originalNoteText : String
+    lateinit var viewModel : NoteActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +29,16 @@ class NoteActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         setSupportActionBar(binding.toolbar)
+
+        val viewModelProvider = ViewModelProvider(viewModelStore,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application))
+
+        viewModel = viewModelProvider.get(NoteActivityViewModel::class.java)
+
+        if (viewModel.isNewlyCreated && savedInstanceState != null)
+            viewModel.restoreState(savedInstanceState)
+
+        viewModel.isNewlyCreated = false
 
         val courses: List<CourseInfo> = DataManager.instance.courses
         val adapterCourses: ArrayAdapter<CourseInfo> =
@@ -48,6 +57,13 @@ class NoteActivity : AppCompatActivity() {
                 textNoteTitle,
                 textNoteText,
             )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if(outState != null){
+            viewModel.saveSate(outState)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -96,9 +112,9 @@ class NoteActivity : AppCompatActivity() {
     private fun saveOriginalNoteValues() {
         if(isNewNote)
             return
-        note.course?.courseId?.let { originalNoteCourseId = it }
-        note.title?.let {  originalNoteTitle = it }
-        note.text?.let {  originalNoteText = it }
+        note.course?.courseId?.let { viewModel.originalNoteCourseId = it }
+        note.title?.let {  viewModel.originalNoteTitle = it }
+        note.text?.let {  viewModel.originalNoteText = it }
 
     }
 
@@ -132,10 +148,10 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun storePreviousNoteValues() {
-        val course = DataManager.instance.getCourse(originalNoteCourseId)
+        val course = DataManager.instance.getCourse(viewModel.originalNoteCourseId)
         note.course = course
-        note.title = originalNoteTitle
-        note.text = originalNoteText
+        note.title = viewModel.originalNoteTitle
+        note.text = viewModel.originalNoteText
     }
 
     private fun saveNote() {
