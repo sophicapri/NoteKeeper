@@ -21,7 +21,7 @@ class NoteActivity : AppCompatActivity() {
     private lateinit var textNoteText: EditText
     private var notePosition = 0
     private var isCancelling = false
-    lateinit var viewModel : NoteActivityViewModel
+    lateinit var viewModel: NoteActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +30,10 @@ class NoteActivity : AppCompatActivity() {
         setContentView(view)
         setSupportActionBar(binding.toolbar)
 
-        val viewModelProvider = ViewModelProvider(viewModelStore,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(application))
+        val viewModelProvider = ViewModelProvider(
+            viewModelStore,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )
 
         viewModel = viewModelProvider.get(NoteActivityViewModel::class.java)
 
@@ -101,27 +103,26 @@ class NoteActivity : AppCompatActivity() {
 
     private fun readDisplayStateValues() {
         val intent: Intent = intent
-        val position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
-        isNewNote = position == POSITION_NOT_SET
-        if (isNewNote) {
+        notePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
+        isNewNote = notePosition == POSITION_NOT_SET
+        if (isNewNote)
             createNewNote()
-        } else
-            note = DataManager.instance.notes[position]
+        note = DataManager.instance.notes[notePosition]
     }
 
     private fun saveOriginalNoteValues() {
-        if(isNewNote)
+        if (isNewNote)
             return
         note.course?.courseId?.let { viewModel.originalNoteCourseId = it }
-        note.title?.let {  viewModel.originalNoteTitle = it }
-        note.text?.let {  viewModel.originalNoteText = it }
+        note.title?.let { viewModel.originalNoteTitle = it }
+        note.text?.let { viewModel.originalNoteText = it }
 
     }
 
     private fun createNewNote() {
         val dm: DataManager = DataManager.instance
         notePosition = dm.createNewNote()
-        note = dm.notes[notePosition]
+//        note = dm.notes[notePosition]
     }
 
     private fun displayNote(
