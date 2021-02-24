@@ -5,7 +5,6 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.socap.notekeeper"
@@ -20,8 +19,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-//            debuggable true
-//            tools:ignore="HardcodedDebugMode"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

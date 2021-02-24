@@ -2,6 +2,7 @@ package com.socap.notekeeper
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -13,6 +14,7 @@ import com.socap.notekeeper.databinding.ActivityNoteBinding
 
 
 class NoteActivity : AppCompatActivity() {
+    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityNoteBinding
     private lateinit var note: NoteInfo
     private var isNewNote = false
@@ -61,6 +63,8 @@ class NoteActivity : AppCompatActivity() {
                 textNoteTitle,
                 textNoteText,
             )
+
+        Log.d(TAG, "onCreate")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,6 +111,8 @@ class NoteActivity : AppCompatActivity() {
         isNewNote = notePosition == POSITION_NOT_SET
         if (isNewNote)
             createNewNote()
+
+        Log.i(TAG, "readDisplayStateValues: - notePosition = $notePosition")
         note = DataManager.instance.notes[notePosition]
     }
 
@@ -140,12 +146,14 @@ class NoteActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         if (isCancelling) {
+            Log.i(TAG, "Cancelling note at position $notePosition")
             if (isNewNote)
                 DataManager.instance.removeNote(notePosition)
             else
                 storePreviousNoteValues()
         } else
             saveNote()
+        Log.d(TAG, "onPause")
     }
 
     private fun storePreviousNoteValues() {
