@@ -214,6 +214,15 @@ class DataManager private constructor() {
         return CourseInfo("java_core", "Java Fundamentals: The Core Platform", modules)
     } //endregion
 
+    fun createNewNote(course: CourseInfo?, noteTitle: String, noteText: String): Int {
+        val index = createNewNote()
+        val note = notes[index]
+        note.course = course
+        note.title = noteTitle
+        note.text = noteText
+        return index
+    }
+
     companion object {
         private lateinit var ourInstance: DataManager
         val instance: DataManager

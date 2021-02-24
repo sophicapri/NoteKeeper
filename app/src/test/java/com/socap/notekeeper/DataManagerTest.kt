@@ -65,4 +65,18 @@ class DataManagerTest {
         val foundIndex2 = dm.findNote(newNote2)
         assertEquals(noteIndex2, foundIndex2)
     }
+
+    @Test
+    fun createNewNoteOneStepCreation(){
+        val course = dm.getCourse("android_async")
+        val noteTitle = "Test note title"
+        val noteText = "This is the body of my test note"
+
+        val noteIndex = dm.createNewNote(course, noteTitle, noteText)
+
+        val compareNote = dm.notes[noteIndex]
+        assertEquals(course, compareNote.course)
+        assertEquals(noteTitle, compareNote.title)
+        assertEquals(noteText, compareNote.text)
+    }
 }
