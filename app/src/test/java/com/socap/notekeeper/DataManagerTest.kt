@@ -3,9 +3,18 @@ package com.socap.notekeeper
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.BeforeClass
 
 class DataManagerTest {
-    private val dm: DataManager = DataManager.instance
+    companion object {
+        lateinit var dm: DataManager
+
+        @BeforeClass
+        @JvmStatic
+        fun classSetUp() {
+            dm = DataManager.instance
+        }
+    }
 
     @Before
     fun setUp() {
@@ -33,7 +42,6 @@ class DataManagerTest {
 
     @Test
     fun findSimilarNotes() {
-        val dm: DataManager = DataManager.instance
         val course = dm.getCourse("android_async")
         val noteTitle = "Test note title"
         val noteText1 = "This is the body text of my test note"
