@@ -1,6 +1,7 @@
 package com.socap.notekeeper
 
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DataManager private constructor() {
     private val mCourses: MutableList<CourseInfo> = ArrayList()
@@ -9,7 +10,7 @@ class DataManager private constructor() {
         get() = "Jim Wilson"
     val currentUserEmail: String
         get() = "jimw@jwhh.com"
-    val notes: List<NoteInfo>
+    val notes: MutableList<NoteInfo>
         get() = mNotes
 
     fun createNewNote(): Int {
