@@ -11,7 +11,7 @@ import com.socap.notekeeper.databinding.ActivityNoteListBinding
 
 class NoteListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteListBinding
-//    private lateinit var adapterNotes : ArrayAdapter<NoteInfo>
+    private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +28,7 @@ class NoteListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
   //      adapterNotes.notifyDataSetChanged()
+        noteRecyclerAdapter.notifyDataSetChanged()
     }
 
     private fun initializeDisplayContent() {
@@ -49,7 +50,7 @@ class NoteListActivity : AppCompatActivity() {
         recyclerNotes.layoutManager = notesLayoutManager
 
         val notes = DataManager.instance.notes
-        val noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
+        noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
         recyclerNotes.adapter = noteRecyclerAdapter
 
     }

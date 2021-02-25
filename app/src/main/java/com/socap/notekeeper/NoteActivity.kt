@@ -88,8 +88,19 @@ class NoteActivity : AppCompatActivity() {
                 isCancelling = true
                 finish()
             }
+            R.id.action_next -> moveNext()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun moveNext() {
+        saveNote()
+
+        ++notePosition
+        note = DataManager.instance.notes[notePosition]
+
+        saveOriginalNoteValues()
+        displayNote(spinnerCourses, textNoteTitle, textNoteText)
     }
 
     private fun sendEmail() {
