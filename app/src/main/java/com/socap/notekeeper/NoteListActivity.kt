@@ -19,7 +19,7 @@ class NoteListActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        binding.fab.setOnClickListener { view ->
+        binding.fab.setOnClickListener {
             startActivity(Intent(this, NoteActivity::class.java))
         }
         initializeDisplayContent()
