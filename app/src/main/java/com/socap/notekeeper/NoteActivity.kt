@@ -93,6 +93,13 @@ class NoteActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val item: MenuItem = menu.findItem(R.id.action_next)
+        val lastNoteIndex = DataManager.instance.notes.size - 1
+        item.isEnabled = notePosition < lastNoteIndex
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     private fun moveNext() {
         saveNote()
 
@@ -101,6 +108,7 @@ class NoteActivity : AppCompatActivity() {
 
         saveOriginalNoteValues()
         displayNote(spinnerCourses, textNoteTitle, textNoteText)
+        invalidateOptionsMenu()
     }
 
     private fun sendEmail() {

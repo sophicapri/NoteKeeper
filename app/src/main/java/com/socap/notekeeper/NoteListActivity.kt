@@ -27,24 +27,10 @@ class NoteListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-  //      adapterNotes.notifyDataSetChanged()
         noteRecyclerAdapter.notifyDataSetChanged()
     }
 
     private fun initializeDisplayContent() {
-  /*      val listNotes: ListView = binding.contentNoteList.listNotes
-        val notes : List<NoteInfo> = DataManager.instance.notes
-        adapterNotes = ArrayAdapter(this, android.R.layout.simple_list_item_1, notes)
-
-        listNotes.adapter = adapterNotes
-
-        listNotes.setOnItemClickListener { _, _, position, l ->
-            val intent = Intent(this, NoteActivity::class.java)
-//            val note : NoteInfo = listNotes.getItemAtPosition(position) as NoteInfo
-            intent.putExtra(NOTE_POSITION, position)
-            startActivity(intent)
-        }*/
-
         val recyclerNotes = binding.contentNoteList.listNotes
         val notesLayoutManager = LinearLayoutManager(this)
         recyclerNotes.layoutManager = notesLayoutManager
@@ -52,6 +38,5 @@ class NoteListActivity : AppCompatActivity() {
         val notes = DataManager.instance.notes
         noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
         recyclerNotes.adapter = noteRecyclerAdapter
-
     }
 }
