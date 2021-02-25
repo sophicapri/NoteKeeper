@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/drawable/side_nav_bar.xml" value="0.2640625" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/activity_main.xml" value="0.20969202898550723" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/activity_note.xml" value="0.24375" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/activity_note_list.xml" value="0.14673913043478262" />
@@ -15,6 +16,7 @@
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/fragment_slideshow.xml" value="0.20969202898550723" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/item_note_list.xml" value="0.264" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/nav_header_main.xml" value="0.24375" />
+        <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/menu/activity_main_drawer.xml" value="0.4" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/menu/main.xml" value="0.24375" />
         <entry key="..\:/Users/sophi/Documents/AndroidLearning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/menu/menu_note.xml" value="0.24375" />
       </map>

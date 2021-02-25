@@ -22,4 +22,9 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="close_navigation_drawer">Closer navigation drawer</string>
+    <string name="notes">Notes</string>
+    <string name="courses">Courses</string>
+    <string name="communicate">Communicate</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
 </resources>

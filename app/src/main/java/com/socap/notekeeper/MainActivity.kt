@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.socap.notekeeper.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
 
@@ -36,20 +35,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         configureDrawerLayout()
         initializeDisplayContent()
-
-        /* BELOW, is focused on Navigation Component **/
- /*
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)*/
     }
 
     private fun configureDrawerLayout() {
@@ -84,8 +69,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.nav_notes -> handleSelection("Notes")
+            R.id.nav_courses -> handleSelection("Courses")
+            R.id.nav_share -> handleSelection("Share")
+            R.id.nav_send -> handleSelection("Send")
+
+        }
+
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun handleSelection(message: String) {
+        val view = binding.appBarMain.contentMain.listItems
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
@@ -96,8 +94,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    /*  override fun onSupportNavigateUp(): Boolean {
-          val navController = findNavController(R.id.nav_host_fragment_content_main)
-          return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-      }*/
 }
