@@ -1,26 +1,25 @@
 package com.socap.notekeeper
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.socap.notekeeper.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
+    private lateinit var recyclerNotes: RecyclerView
+    private lateinit var notesLayoutManager: LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +46,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         noteRecyclerAdapter.notifyDataSetChanged()
     }
 
     private fun initializeDisplayContent() {
-        val recyclerNotes = binding.appBarMain.contentMain.listItems
-        val notesLayoutManager = LinearLayoutManager(this)
-        recyclerNotes.layoutManager = notesLayoutManager
+        recyclerNotes = binding.appBarMain.contentMain.listItems
+        notesLayoutManager = LinearLayoutManager(this)
+
 
         val notes = DataManager.instance.notes
         noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
+        displayNotes()
+    }
+
+    private fun displayNotes() {
+        recyclerNotes.layoutManager = notesLayoutManager
         recyclerNotes.adapter = noteRecyclerAdapter
+        binding.navView.menu.findItem(R.id.nav_notes).isChecked = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -70,11 +76,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.nav_notes -> handleSelection("Notes")
+            R.id.nav_notes -> displayNotes()
             R.id.nav_courses -> handleSelection("Courses")
             R.id.nav_share -> handleSelection("Share")
             R.id.nav_send -> handleSelection("Send")
-
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
