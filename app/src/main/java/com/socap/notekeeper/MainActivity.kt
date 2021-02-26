@@ -9,6 +9,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
@@ -18,8 +19,10 @@ import com.socap.notekeeper.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
-    private lateinit var recyclerNotes: RecyclerView
+    private lateinit var courseRecyclerAdapter: CourseRecyclerAdapter
+    private lateinit var recyclerItems: RecyclerView
     private lateinit var notesLayoutManager: LinearLayoutManager
+    private lateinit var courseLayoutManager: GridLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,19 +56,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initializeDisplayContent() {
-        recyclerNotes = binding.appBarMain.contentMain.listItems
+        recyclerItems = binding.appBarMain.contentMain.listItems
         notesLayoutManager = LinearLayoutManager(this)
-
+        courseLayoutManager = GridLayoutManager(this, 2)
 
         val notes = DataManager.instance.notes
         noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
+
+        val courses = DataManager.instance.courses
+        courseRecyclerAdapter = CourseRecyclerAdapter(this, courses)
+
         displayNotes()
     }
 
     private fun displayNotes() {
-        recyclerNotes.layoutManager = notesLayoutManager
-        recyclerNotes.adapter = noteRecyclerAdapter
-        binding.navView.menu.findItem(R.id.nav_notes).isChecked = true
+        recyclerItems.layoutManager = notesLayoutManager
+        recyclerItems.adapter = noteRecyclerAdapter
+        selectNavigationMenuItem(R.id.nav_notes)
+    }
+
+    private fun displayCourses() {
+        recyclerItems.layoutManager = courseLayoutManager
+        recyclerItems.adapter = courseRecyclerAdapter
+        selectNavigationMenuItem(R.id.nav_courses)
+    }
+
+    private fun selectNavigationMenuItem(id: Int) {
+        binding.navView.menu.findItem(id).isChecked = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -77,7 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.nav_notes -> displayNotes()
-            R.id.nav_courses -> handleSelection("Courses")
+            R.id.nav_courses -> displayCourses()
             R.id.nav_share -> handleSelection("Share")
             R.id.nav_send -> handleSelection("Send")
         }
