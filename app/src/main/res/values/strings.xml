@@ -27,4 +27,6 @@
     <string name="communicate">Communicate</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="icon_for_note">Icon for note</string>
+    <string name="icon_for_course">Icon for course</string>
 </resources>
