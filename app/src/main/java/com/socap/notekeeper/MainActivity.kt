@@ -95,17 +95,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when(item.itemId){
             R.id.nav_notes -> displayNotes()
             R.id.nav_courses -> displayCourses()
-            R.id.nav_share -> handleSelection("Share")
-            R.id.nav_send -> handleSelection("Send")
+            R.id.nav_share -> handleSelection(R.string.nav_share_message)
+            R.id.nav_send -> handleSelection(R.string.nav_send_message)
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun handleSelection(message: String) {
+    private fun handleSelection(message_id: Int) {
         val view = binding.appBarMain.contentMain.listItems
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(view, message_id, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
