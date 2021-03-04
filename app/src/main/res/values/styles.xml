@@ -10,7 +10,7 @@
         <item name="android:tint">@color/white</item>
     </style>
 
-    <style name="AddFab" parent="Fab">
+    <style name="Fab.Add">
         <item name="srcCompat">@drawable/ic_baseline_add_circle_24</item>
     </style>
 </resources>
