@@ -25,12 +25,12 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
+                android:contentDescription="@string/icon_for_note"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_assignment_24"
-                app:tint="#F05128"
-                android:contentDescription="@string/icon_for_note" />
+                app:tint="@color/pluralsight_orange" />
 
             <TextView
                 android:id="@+id/text_course"

@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initializeDisplayContent() {
         recyclerItems = binding.appBarMain.contentMain.listItems
         notesLayoutManager = LinearLayoutManager(this)
-        courseLayoutManager = GridLayoutManager(this, 2)
+        courseLayoutManager = GridLayoutManager(this, resources.getInteger(R.integer.course_grid_span))
 
         val notes = DataManager.instance.notes
         noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
