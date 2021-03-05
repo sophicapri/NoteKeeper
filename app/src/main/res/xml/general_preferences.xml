@@ -7,7 +7,7 @@
     <EditTextPreference
         android:defaultValue="@string/pref_default_display_name"
         android:inputType="textCapWords"
-        android:key="user_display_name"
+        android:key="@string/key_user_display_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
@@ -20,7 +20,7 @@
     <EditTextPreference
         android:defaultValue="@string/pref_default_email_address"
         android:inputType="textEmailAddress"
-        android:key="user_email_address"
+        android:key="@string/key_user_email_address"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         app:useSimpleSummaryProvider="true"

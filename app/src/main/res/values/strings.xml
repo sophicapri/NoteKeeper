@@ -68,4 +68,6 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="title_activity_settings2">SettingsActivity2</string>
     <string name="title_activity_settings3">SettingsActivity3</string>
+    <string name="key_user_display_name">key_user_display_name</string>
+    <string name="key_user_email_address">key_user_email_address</string>
 </resources>
