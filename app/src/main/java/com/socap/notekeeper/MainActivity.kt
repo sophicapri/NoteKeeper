@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_notes -> displayNotes()
             R.id.nav_courses -> displayCourses()
-            R.id.nav_share -> handleSelection(R.string.nav_share_message)
+            R.id.nav_share -> handleShare()
             R.id.nav_send -> handleSelection(R.string.nav_send_message)
         }
 
@@ -137,9 +137,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    private fun handleShare() {
+        Snackbar.make(
+            recyclerItems, "Share to - ${
+                PreferenceManager
+                    .getDefaultSharedPreferences(this).getString(
+                        getString(R.string.key_user_favorite_social),
+                        getString(R.string.pref_default_favorite_social)
+                    )
+            }", Snackbar.LENGTH_LONG
+        ).show()
+    }
+
     private fun handleSelection(message_id: Int) {
-        val view = binding.appBarMain.contentMain.listItems
-        Snackbar.make(view, message_id, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(recyclerItems, message_id, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {

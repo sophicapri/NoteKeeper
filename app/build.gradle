@@ -55,4 +55,6 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0-alpha04'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0-alpha04'
+
+    implementation 'com.android.databinding:viewbinding:4.1.2'
 }
