@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var recyclerItems: RecyclerView
     private lateinit var notesLayoutManager: LinearLayoutManager
     private lateinit var courseLayoutManager: GridLayoutManager
+    private lateinit var dbOpenHelper: NoteKeeperOpenHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        dbOpenHelper = NoteKeeperOpenHelper(this)
         binding.appBarMain.fab.setOnClickListener {
             startActivity(Intent(this, NoteActivity::class.java))
         }
@@ -81,6 +83,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initializeDisplayContent() {
+        DataManager.loadFromDatabase(dbOpenHelper)
+
         recyclerItems = binding.appBarMain.contentMain.listItems
         notesLayoutManager = LinearLayoutManager(this)
         courseLayoutManager =
@@ -98,6 +102,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun displayNotes() {
         recyclerItems.layoutManager = notesLayoutManager
         recyclerItems.adapter = noteRecyclerAdapter
+
         selectNavigationMenuItem(R.id.nav_notes)
     }
 
@@ -161,4 +166,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onDestroy() {
+        dbOpenHelper.close()
+        super.onDestroy()
+    }
 }

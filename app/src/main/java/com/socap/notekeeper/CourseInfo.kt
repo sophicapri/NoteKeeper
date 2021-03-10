@@ -9,7 +9,7 @@ class CourseInfo : Parcelable {
     val title: String
     private val modules: List<ModuleInfo>
 
-    constructor(courseId: String, title: String, modules: List<ModuleInfo>) {
+    constructor(courseId: String, title: String, modules: List<ModuleInfo> = listOf()) {
         this.courseId = courseId
         this.title = title
         this.modules = modules
@@ -65,7 +65,8 @@ class CourseInfo : Parcelable {
     }
 
     companion object {
-        @JvmField val CREATOR: Parcelable.Creator<CourseInfo?> = object : Parcelable.Creator<CourseInfo?> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<CourseInfo?> = object : Parcelable.Creator<CourseInfo?> {
             override fun createFromParcel(source: Parcel) = CourseInfo(source)
 
             override fun newArray(size: Int) = arrayOfNulls<CourseInfo>(size)

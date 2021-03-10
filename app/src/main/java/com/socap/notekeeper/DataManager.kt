@@ -1,6 +1,8 @@
 package com.socap.notekeeper
 
-import java.util.*
+import android.database.Cursor
+import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
+import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import kotlin.collections.ArrayList
 
 class DataManager private constructor() {
@@ -30,7 +32,7 @@ class DataManager private constructor() {
         mNotes.removeAt(index)
     }
 
-    val courses: List<CourseInfo>
+    val courses: MutableList<CourseInfo>
         get() = mCourses
 
     fun getCourse(id: String): CourseInfo? {
@@ -229,10 +231,74 @@ class DataManager private constructor() {
             get() {
                 if (!::ourInstance.isInitialized) {
                     ourInstance = DataManager()
-                    ourInstance.initializeCourses()
-                    ourInstance.initializeExampleNotes()
+                    /*ourInstance.initializeCourses()
+                    ourInstance.initializeExampleNotes()*/
                 }
                 return ourInstance
             }
+
+        fun loadFromDatabase(dbHelper: NoteKeeperOpenHelper) {
+            val db = dbHelper.readableDatabase
+            val courseColumns: Array<String> = arrayOf(
+                CourseInfoEntry.COLUMN_COURSE_ID,
+                CourseInfoEntry.COLUMN_COURSE_TITLE
+            )
+            val courseCursor: Cursor = db.run {
+                query(CourseInfoEntry.TABLE_NAME, courseColumns,
+                    null, null, null, null,
+                    "${CourseInfoEntry.COLUMN_COURSE_TITLE} DESC")
+            }
+
+            loadCoursesFromDatabase(courseCursor)
+
+            val noteColumns: Array<String> = arrayOf(
+                NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteInfoEntry.COLUMN_NOTE_TEXT,
+                NoteInfoEntry.COLUMN_COURSE_ID
+            )
+            val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+            val noteCursor: Cursor = db.run {
+                query(NoteInfoEntry.TABLE_NAME, noteColumns, null,
+                    null, null, null, noteOrderBy)
+            }
+
+            loadNotesFromDatabase(noteCursor)
+        }
+
+        private fun loadCoursesFromDatabase(cursor: Cursor) {
+            val courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID)
+            val courseTitlePos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE)
+
+            val dm = instance
+            dm.courses.clear()
+            while (cursor.moveToNext()){
+                val courseId = cursor.getString(courseIdPos)
+                val courseTitle = cursor.getString(courseTitlePos)
+                val course = CourseInfo(courseId, courseTitle)
+
+                dm.courses.add(course)
+            }
+            cursor.close()
+        }
+
+        private fun loadNotesFromDatabase(cursor: Cursor) {
+            val noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
+            val noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
+            val courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
+
+            val dm = instance
+            dm.notes.clear()
+            while (cursor.moveToNext()){
+                val noteTitle = cursor.getString(noteTitlePos)
+                val noteText = cursor.getString(noteTextPos)
+                val courseId = cursor.getString(courseIdPos)
+
+                val noteCourse = dm.getCourse(courseId)
+
+                val note = NoteInfo(noteCourse, noteTitle, noteText)
+                dm.notes.add(note)
+            }
+            cursor.close()
+        }
     }
 }
