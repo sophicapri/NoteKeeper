@@ -1,6 +1,7 @@
 package com.socap.notekeeper
 
 import android.content.Intent
+import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -10,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 
 
@@ -24,6 +26,11 @@ class NoteActivity : AppCompatActivity() {
     private var notePosition = 0
     private var isCancelling = false
     lateinit var viewModel: NoteActivityViewModel
+    private lateinit var dbOpenHelper: NoteKeeperOpenHelper
+    private lateinit var noteCursor: Cursor
+    private var courseIdPos = 0
+    private var noteTitlePos = 0
+    private var noteTextPos = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +39,7 @@ class NoteActivity : AppCompatActivity() {
         setContentView(view)
         setSupportActionBar(binding.toolbar)
 
+        dbOpenHelper = NoteKeeperOpenHelper(this)
         val viewModelProvider = ViewModelProvider(
             viewModelStore,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
@@ -58,13 +66,40 @@ class NoteActivity : AppCompatActivity() {
         readDisplayStateValues()
         saveOriginalNoteValues()
         if (!isNewNote)
-            displayNote(
-                spinnerCourses,
-                textNoteTitle,
-                textNoteText,
-            )
+            loadNoteData()
 
         Log.d(TAG, "onCreate")
+    }
+
+    private fun loadNoteData() {
+        val db = dbOpenHelper.readableDatabase
+
+        val courseId = "android_intents"
+        val titleStart = "dynamic"
+
+        val selection =
+            "${NoteInfoEntry.COLUMN_COURSE_ID} = ? AND ${NoteInfoEntry.COLUMN_NOTE_TITLE} LIKE ?"
+        val selectionArgs: Array<String> = arrayOf(courseId, "$titleStart%")
+
+        val noteColumns: Array<String> = arrayOf(
+            NoteInfoEntry.COLUMN_COURSE_ID,
+            NoteInfoEntry.COLUMN_NOTE_TITLE,
+            NoteInfoEntry.COLUMN_NOTE_TEXT
+        )
+
+        noteCursor = db.run {
+            query(
+                NoteInfoEntry.TABLE_NAME, noteColumns, selection, selectionArgs, null,
+                null, null
+            )
+        }
+
+        courseIdPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
+        noteTitlePos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
+        noteTextPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
+
+        noteCursor.moveToNext()
+        displayNote()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,7 +142,7 @@ class NoteActivity : AppCompatActivity() {
         note = DataManager.instance.notes[notePosition]
 
         saveOriginalNoteValues()
-        displayNote(spinnerCourses, textNoteTitle, textNoteText)
+        displayNote()
         invalidateOptionsMenu()
     }
 
@@ -147,19 +182,18 @@ class NoteActivity : AppCompatActivity() {
     private fun createNewNote() {
         val dm: DataManager = DataManager.instance
         notePosition = dm.createNewNote()
-//        note = dm.notes[notePosition]
     }
 
-    private fun displayNote(
-        spinnerCourses: Spinner,
-        textNoteTitle: EditText,
-        textNoteText: EditText
-    ) {
+    private fun displayNote() {
+        val courseId = noteCursor.getString(courseIdPos)
+        val noteTitle = noteCursor.getString(noteTitlePos)
+        val noteText = noteCursor.getString(noteTextPos)
         val courses = DataManager.instance.courses
-        val courseIndex = courses.indexOf(note.course)
+        val course = DataManager.instance.getCourse(courseId)
+        val courseIndex = courses.indexOf(course)
         spinnerCourses.setSelection(courseIndex)
-        textNoteTitle.setText(note.title)
-        textNoteText.setText(note.text)
+        textNoteTitle.setText(noteTitle)
+        textNoteText.setText(noteText)
     }
 
     override fun onPause() {
@@ -186,6 +220,11 @@ class NoteActivity : AppCompatActivity() {
         note.course = spinnerCourses.selectedItem as CourseInfo
         note.title = textNoteTitle.text.toString()
         note.text = textNoteText.text.toString()
+    }
+
+    override fun onDestroy() {
+        dbOpenHelper.close()
+        super.onDestroy()
     }
 
     companion object {
