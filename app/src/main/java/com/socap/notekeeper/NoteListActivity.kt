@@ -33,7 +33,7 @@ class NoteListActivity : AppCompatActivity() {
         recyclerNotes.layoutManager = notesLayoutManager
 
         val notes = DataManager.instance.notes
-        noteRecyclerAdapter = NoteRecyclerAdapter(this, notes)
+        noteRecyclerAdapter = NoteRecyclerAdapter(this, null)
         recyclerNotes.adapter = noteRecyclerAdapter
     }
 }
