@@ -209,14 +209,51 @@ class NoteActivity : AppCompatActivity() {
         val courseId = noteCursor.getString(courseIdPos)
         val noteTitle = noteCursor.getString(noteTitlePos)
         val noteText = noteCursor.getString(noteTextPos)
-        val courses = DataManager.instance.courses
-        val course = DataManager.instance.getCourse(courseId)
-        val courseIndex = courses.indexOf(course)
+
+        val courseIndex = getIndexOfCourseId(courseId)
         spinnerCourses.setSelection(courseIndex)
+        val courseTitle = spinnerCourses.selectedItem.toString()
         textNoteTitle.setText(noteTitle)
         textNoteText.setText(noteText)
 
-        note = NoteInfo(course = course, title = noteTitle, text = noteText)
+
+        note = NoteInfo(course = CourseInfo(courseId = courseId, title = courseTitle),
+            title = noteTitle, text = noteText)
+    }
+
+ /*   private fun getCourseFromDB(courseId: String?): CourseInfo {
+        val db = dbOpenHelper.readableDatabase
+        val selection = "${CourseInfoEntry.ID} = ?"
+        val selectionArgs: Array<String> = arrayOf(courseId.toString())
+
+        val noteColumns: Array<String> = arrayOf(
+            CourseInfoEntry.COLUMN_COURSE_ID,
+            CourseInfoEntry.COLUMN_COURSE_TITLE,
+        )
+
+        noteCursor = db.run {
+            query(
+                NoteInfoEntry.TABLE_NAME, noteColumns, selection, selectionArgs, null,
+                null, null
+            )
+        }
+    }*/
+
+    private fun getIndexOfCourseId(courseId: String): Int {
+        val cursor = adapterCourses.cursor
+        val courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID)
+        var courseRowIndex = 0
+
+        var more = cursor.moveToFirst()
+        while (more){
+            val cursorCourseId = cursor.getString(courseIdPos)
+            if(courseId == cursorCourseId)
+                break
+
+            courseRowIndex++
+            more = cursor.moveToNext()
+        }
+        return courseRowIndex
     }
 
     override fun onPause() {
@@ -240,7 +277,8 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        note.course = spinnerCourses.selectedItem as CourseInfo
+        //note.course = spinnerCourses.selectedItem as CourseInfo
+        //note.course = CourseInfo(courseId = , title = spinnerCourses.selectedItem.toString())
         note.title = textNoteTitle.text.toString()
         note.text = textNoteText.text.toString()
     }
