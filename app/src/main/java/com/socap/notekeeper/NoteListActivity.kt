@@ -2,11 +2,8 @@ package com.socap.notekeeper
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.socap.notekeeper.NoteActivity.Companion.NOTE_POSITION
 import com.socap.notekeeper.databinding.ActivityNoteListBinding
 
 class NoteListActivity : AppCompatActivity() {

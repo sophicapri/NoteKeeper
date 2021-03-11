@@ -69,36 +69,40 @@ class DataManager private constructor() {
     fun initializeExampleNotes() {
         val dm = instance
         var course = dm.getCourse("android_intents")
-        course?.getModule("android_intents_m01")?.isComplete = true
-        course?.getModule("android_intents_m02")?.isComplete = true
-        course?.getModule("android_intents_m03")?.isComplete = true
-        mNotes.add(
-            NoteInfo(
-                course, "Dynamic intent resolution",
-                "Wow, intents allow components to be resolved at runtime"
+        course?.let {
+            it.getModule("android_intents_m01")?.isComplete = true
+            it.getModule("android_intents_m02")?.isComplete = true
+            it.getModule("android_intents_m03")?.isComplete = true
+            mNotes.add(
+                NoteInfo(
+                    course = it, title = "Dynamic intent resolution",
+                    text = "Wow, intents allow components to be resolved at runtime"
+                )
             )
-        )
-        mNotes.add(
-            NoteInfo(
-                course, "Delegating intents",
-                "PendingIntents are powerful; they delegate much more than just a component invocation"
+            mNotes.add(
+                NoteInfo(
+                    course = it, title = "Delegating intents",
+                    text = "PendingIntents are powerful; they delegate much more than just a component invocation"
+                )
             )
-        )
+        }
         course = dm.getCourse("android_async")
-        course?.getModule("android_async_m01")?.isComplete = true
-        course?.getModule("android_async_m02")?.isComplete = true
-        mNotes.add(
-            NoteInfo(
-                course, "Service default threads",
-                "Did you know that by default an Android Service will tie up the UI thread?"
+        course?.let {
+            it.getModule("android_async_m01")?.isComplete = true
+            it.getModule("android_async_m02")?.isComplete = true
+            mNotes.add(
+                NoteInfo(
+                    course = it, title =  "Service default threads",
+                    text = "Did you know that by default an Android Service will tie up the UI thread?"
+                )
             )
-        )
-        mNotes.add(
-            NoteInfo(
-                course, "Long running operations",
-                "Foreground Services can be tied to a notification icon"
+            mNotes.add(
+                NoteInfo(
+                    course = it, title = "Long running operations",
+                    text = "Foreground Services can be tied to a notification icon"
+                )
             )
-        )
+        }
         course = dm.getCourse("java_lang")
         course?.let {
             it.getModule("java_lang_m01")?.isComplete = true
@@ -108,35 +112,38 @@ class DataManager private constructor() {
             it.getModule("java_lang_m05")?.isComplete = true
             it.getModule("java_lang_m06")?.isComplete = true
             it.getModule("java_lang_m07")?.isComplete = true
+
+            mNotes.add(
+                NoteInfo(
+                    course = it, title = "Parameters",
+                    text = "Leverage variable-length parameter lists"
+                )
+            )
+            mNotes.add(
+                NoteInfo(
+                    course = it, title = "Anonymous classes",
+                    text = "Anonymous classes simplify implementing one-use types"
+                )
+            )
         }
-        mNotes.add(
-            NoteInfo(
-                course, "Parameters",
-                "Leverage variable-length parameter lists"
-            )
-        )
-        mNotes.add(
-            NoteInfo(
-                course, "Anonymous classes",
-                "Anonymous classes simplify implementing one-use types"
-            )
-        )
         course = dm.getCourse("java_core")
-        course?.getModule("java_core_m01")?.isComplete = true
-        course?.getModule("java_core_m02")?.isComplete = true
-        course?.getModule("java_core_m03")?.isComplete = true
-        mNotes.add(
-            NoteInfo(
-                course, "Compiler options",
-                "The -jar option isn't compatible with with the -cp option"
+        course?.let {
+            it.getModule("java_core_m01")?.isComplete = true
+            it.getModule("java_core_m02")?.isComplete = true
+            it.getModule("java_core_m03")?.isComplete = true
+            mNotes.add(
+                NoteInfo(
+                    course = course, title = "Compiler options",
+                    text = "The -jar option isn't compatible with with the -cp option"
+                )
             )
-        )
-        mNotes.add(
-            NoteInfo(
-                course, "Serialization",
-                "Remember to include SerialVersionUID to assure version compatibility"
+            mNotes.add(
+                NoteInfo(
+                    course = course, title = "Serialization",
+                    text = "Remember to include SerialVersionUID to assure version compatibility"
+                )
             )
-        )
+        }
     }
 
     private fun initializeCourse1(): CourseInfo {
@@ -216,7 +223,7 @@ class DataManager private constructor() {
         return CourseInfo("java_core", "Java Fundamentals: The Core Platform", modules)
     } //endregion
 
-    fun createNewNote(course: CourseInfo?, noteTitle: String, noteText: String): Int {
+    fun createNewNote(course: CourseInfo, noteTitle: String, noteText: String): Int {
         val index = createNewNote()
         val note = notes[index]
         note.course = course
@@ -254,7 +261,8 @@ class DataManager private constructor() {
             val noteColumns: Array<String> = arrayOf(
                 NoteInfoEntry.COLUMN_NOTE_TITLE,
                 NoteInfoEntry.COLUMN_NOTE_TEXT,
-                NoteInfoEntry.COLUMN_COURSE_ID
+                NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteInfoEntry.ID
             )
             val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
             val noteCursor: Cursor = db.run {
@@ -285,6 +293,7 @@ class DataManager private constructor() {
             val noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
             val noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
             val courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
+            val idPos = cursor.getColumnIndex(NoteInfoEntry.ID)
 
             val dm = instance
             dm.notes.clear()
@@ -292,11 +301,13 @@ class DataManager private constructor() {
                 val noteTitle = cursor.getString(noteTitlePos)
                 val noteText = cursor.getString(noteTextPos)
                 val courseId = cursor.getString(courseIdPos)
+                val id = cursor.getInt(idPos)
 
                 val noteCourse = dm.getCourse(courseId)
-
-                val note = NoteInfo(noteCourse, noteTitle, noteText)
-                dm.notes.add(note)
+                noteCourse?.let {
+                    val note = NoteInfo(id, noteCourse, noteTitle, noteText)
+                    dm.notes.add(note)
+                }
             }
             cursor.close()
         }

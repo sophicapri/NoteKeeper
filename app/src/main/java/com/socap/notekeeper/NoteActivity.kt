@@ -18,12 +18,12 @@ import com.socap.notekeeper.databinding.ActivityNoteBinding
 class NoteActivity : AppCompatActivity() {
     private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityNoteBinding
-    private lateinit var note: NoteInfo
+    private var note: NoteInfo = NoteInfo()
     private var isNewNote = false
     private lateinit var spinnerCourses: Spinner
     private lateinit var textNoteTitle: EditText
     private lateinit var textNoteText: EditText
-    private var notePosition = 0
+    private var noteId = 0
     private var isCancelling = false
     lateinit var viewModel: NoteActivityViewModel
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
@@ -64,9 +64,9 @@ class NoteActivity : AppCompatActivity() {
         textNoteText = binding.contentNote.textNoteText
 
         readDisplayStateValues()
-        saveOriginalNoteValues()
         if (!isNewNote)
             loadNoteData()
+        saveOriginalNoteValues()
 
         Log.d(TAG, "onCreate")
     }
@@ -74,12 +74,11 @@ class NoteActivity : AppCompatActivity() {
     private fun loadNoteData() {
         val db = dbOpenHelper.readableDatabase
 
-        val courseId = "android_intents"
-        val titleStart = "dynamic"
+        //val courseId = "android_intents"
+        //val titleStart = "dynamic"
 
-        val selection =
-            "${NoteInfoEntry.COLUMN_COURSE_ID} = ? AND ${NoteInfoEntry.COLUMN_NOTE_TITLE} LIKE ?"
-        val selectionArgs: Array<String> = arrayOf(courseId, "$titleStart%")
+        val selection = "${NoteInfoEntry.ID} = ?"
+        val selectionArgs: Array<String> = arrayOf(noteId.toString())
 
         val noteColumns: Array<String> = arrayOf(
             NoteInfoEntry.COLUMN_COURSE_ID,
@@ -131,15 +130,15 @@ class NoteActivity : AppCompatActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val item: MenuItem = menu.findItem(R.id.action_next)
         val lastNoteIndex = DataManager.instance.notes.size - 1
-        item.isEnabled = notePosition < lastNoteIndex
+        item.isEnabled = noteId < lastNoteIndex
         return super.onPrepareOptionsMenu(menu)
     }
 
     private fun moveNext() {
         saveNote()
 
-        ++notePosition
-        note = DataManager.instance.notes[notePosition]
+        ++noteId
+        note = DataManager.instance.notes[noteId]
 
         saveOriginalNoteValues()
         displayNote()
@@ -161,13 +160,13 @@ class NoteActivity : AppCompatActivity() {
 
     private fun readDisplayStateValues() {
         val intent: Intent = intent
-        notePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
-        isNewNote = notePosition == POSITION_NOT_SET
+        noteId = intent.getIntExtra(NOTE_ID, ID_NOT_SET)
+        isNewNote = noteId == ID_NOT_SET
         if (isNewNote)
             createNewNote()
 
-        Log.i(TAG, "readDisplayStateValues: - notePosition = $notePosition")
-        note = DataManager.instance.notes[notePosition]
+        Log.i(TAG, "readDisplayStateValues: - notePosition = $noteId")
+        //note = DataManager.instance.notes[noteId]
     }
 
     private fun saveOriginalNoteValues() {
@@ -181,7 +180,7 @@ class NoteActivity : AppCompatActivity() {
 
     private fun createNewNote() {
         val dm: DataManager = DataManager.instance
-        notePosition = dm.createNewNote()
+        noteId = dm.createNewNote()
     }
 
     private fun displayNote() {
@@ -194,14 +193,16 @@ class NoteActivity : AppCompatActivity() {
         spinnerCourses.setSelection(courseIndex)
         textNoteTitle.setText(noteTitle)
         textNoteText.setText(noteText)
+
+        note = NoteInfo(course = course, title = noteTitle, text = noteText)
     }
 
     override fun onPause() {
         super.onPause()
         if (isCancelling) {
-            Log.i(TAG, "Cancelling note at position $notePosition")
+            Log.i(TAG, "Cancelling note at position $noteId")
             if (isNewNote)
-                DataManager.instance.removeNote(notePosition)
+                DataManager.instance.removeNote(noteId)
             else
                 storePreviousNoteValues()
         } else
@@ -210,8 +211,8 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun storePreviousNoteValues() {
-        val course = DataManager.instance.getCourse(viewModel.originalNoteCourseId)
-        note.course = course
+        val course = viewModel.originalNoteCourseId.let { DataManager.instance.getCourse(it) }
+        course?.let {  note.course = it }
         note.title = viewModel.originalNoteTitle
         note.text = viewModel.originalNoteText
     }
@@ -228,7 +229,7 @@ class NoteActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val NOTE_POSITION = "com.socap.notekeeper.NOTE_POSITION"
-        const val POSITION_NOT_SET = -1
+        const val NOTE_ID = "com.socap.notekeeper.NOTE_POSITION"
+        const val ID_NOT_SET = -1
     }
 }

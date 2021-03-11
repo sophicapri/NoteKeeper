@@ -2,16 +2,33 @@ package com.socap.notekeeper
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.util.*
 
-class NoteInfo(var course: CourseInfo? = null, var title: String? = null, var text: String? = null) : Parcelable {
+class NoteInfo : Parcelable {
+    var course: CourseInfo? = null
+    var title: String? = null
+    var text: String? = null
+    val id: Int
+        get() = _id
+    private var _id = -1
     private val compareKey: String
         get() = "${course?.courseId}|$title|$text"
 
-    private constructor(parcel: Parcel) : this(
-        parcel.readParcelable(CourseInfo::class.java.classLoader),
-        parcel.readString(),
-        parcel.readString()
-    )
+    constructor()
+
+    constructor(id: Int = -1, course: CourseInfo?, title: String?, text: String? = null) {
+        this._id = id
+        this.course = course
+        this.title = title
+        this.text = text
+    }
+
+    private constructor(parcel: Parcel) {
+        parcel.readParcelable<CourseInfo>(CourseInfo::class.java.classLoader)?.let { course = it }
+        parcel.readString()?.let { title = it }
+        parcel.readString()?.let { text = it }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
@@ -38,7 +55,8 @@ class NoteInfo(var course: CourseInfo? = null, var title: String? = null, var te
     }
 
     companion object {
-        @JvmField val CREATOR: Parcelable.Creator<NoteInfo?> = object : Parcelable.Creator<NoteInfo?> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<NoteInfo?> = object : Parcelable.Creator<NoteInfo?> {
             override fun createFromParcel(source: Parcel) = NoteInfo(source)
 
             override fun newArray(size: Int) = arrayOfNulls<NoteInfo>(size)
