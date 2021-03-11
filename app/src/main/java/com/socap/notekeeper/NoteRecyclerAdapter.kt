@@ -3,6 +3,7 @@ package com.socap.notekeeper
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
     private var coursePos: Int = -1
     private var noteTitlePos: Int = -1
     private var idPos: Int = -1
+    val TAG = "com.socap.notekeeper.NoteRecyclerAdapter"
 
     init {
         populateColumnPositions()
@@ -33,9 +35,10 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
 
     fun changeCursor(cursor: Cursor?) {
         this.cursor?.close()
-
         this.cursor = cursor
         populateColumnPositions()
+        Log.d(TAG, "changeCursor: value = $cursor")
+
         notifyDataSetChanged()
     }
 
@@ -45,6 +48,7 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Log.d(TAG, "onBindViewHolder: value cursor = $cursor")
         cursor?.moveToPosition(position)
         val course = cursor?.getString(coursePos)
         val noteTitle = cursor?.getString(noteTitlePos)
@@ -56,7 +60,7 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
     }
 
     override fun getItemCount() : Int {
-        return if (cursor == null) 0 else cursor?.count!!
+        return if (cursor != null) cursor?.count!! else 0
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

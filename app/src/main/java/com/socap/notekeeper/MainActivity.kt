@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -11,6 +12,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,8 +23,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.databinding.ActivityMainBinding
+import kotlin.math.log
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    LoaderManager.LoaderCallbacks<Cursor> {
     private lateinit var binding: ActivityMainBinding
     private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
     private lateinit var courseRecyclerAdapter: CourseRecyclerAdapter
@@ -28,6 +34,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var notesLayoutManager: LinearLayoutManager
     private lateinit var courseLayoutManager: GridLayoutManager
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
+    var notRestart = true
+    val TAG = "com.socap.notekeeper.MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,28 +65,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
-        loadNotes()
+        LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
         updateNavHeader()
     }
 
-    private fun loadNotes() {
-        val db = dbOpenHelper.readableDatabase
-        val noteColumns: Array<String> = arrayOf(
-            NoteInfoEntry.COLUMN_NOTE_TITLE,
-            NoteInfoEntry.COLUMN_COURSE_ID,
-            NoteInfoEntry.ID
-        )
-        val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
-        val noteCursor: Cursor = db.run {
-            query(
-                NoteInfoEntry.TABLE_NAME, noteColumns, null,
-                null, null, null, noteOrderBy)
-        }
-        noteRecyclerAdapter.changeCursor(noteCursor)
-    }
+    /*  private fun loadNotes() {
+          val db = dbOpenHelper.readableDatabase
+          val noteColumns: Array<String> = arrayOf(
+              NoteInfoEntry.COLUMN_NOTE_TITLE,
+              NoteInfoEntry.COLUMN_COURSE_ID,
+              NoteInfoEntry.ID
+          )
+          val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+          val noteCursor: Cursor = db.run {
+              query(
+                  NoteInfoEntry.TABLE_NAME, noteColumns, null,
+                  null, null, null, noteOrderBy)
+          }
+          noteRecyclerAdapter.changeCursor(noteCursor)
+      }*/
 
     private fun updateNavHeader() {
         val navigationView = binding.navView
@@ -143,7 +150,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java))
         }
-
         return super.onOptionsItemSelected(item)
     }
 
@@ -185,6 +191,57 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         dbOpenHelper.close()
+        Log.d(TAG, "onDestroy: ")
         super.onDestroy()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        notRestart = false
+        Log.d(TAG, "onPause: ")
+    }
+
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+        Log.d(TAG, "onCreateLoader: ")
+        var loader: Loader<Cursor> = CursorLoader(this)
+        if (id == LOADER_NOTES) {
+            loader = object : CursorLoader(this) {
+                override fun loadInBackground(): Cursor? {
+                    val db = dbOpenHelper.readableDatabase
+                    val noteColumns: Array<String> = arrayOf(
+                        NoteInfoEntry.COLUMN_NOTE_TITLE,
+                        NoteInfoEntry.COLUMN_COURSE_ID,
+                        NoteInfoEntry.ID
+                    )
+                    val noteOrderBy =
+                        "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+                    return db.run {
+                        query(
+                            NoteInfoEntry.TABLE_NAME, noteColumns, null,
+                            null, null, null, noteOrderBy
+                        )
+                    }
+                }
+            }
+        }
+        return loader
+    }
+
+    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
+        Log.d(TAG, "onLoadFinished: ")
+        if (loader.id == LOADER_NOTES && notRestart) {
+            noteRecyclerAdapter.changeCursor(data)
+            notRestart = true
+        }
+    }
+
+    override fun onLoaderReset(loader: Loader<Cursor>) {
+        Log.d(TAG, "onLoaderReset: ")
+        if (loader.id == LOADER_NOTES)
+            noteRecyclerAdapter.changeCursor(null)
+    }
+
+    companion object {
+        const val LOADER_NOTES = 3
     }
 }
