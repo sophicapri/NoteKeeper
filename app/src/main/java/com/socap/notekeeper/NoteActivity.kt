@@ -3,7 +3,7 @@ package com.socap.notekeeper
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
-import android.os.AsyncTask
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -18,6 +18,7 @@ import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
+import com.socap.notekeeper.NoteKeeperProvider.Companion.AUTHORITY
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
 
@@ -32,7 +33,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private lateinit var textNoteText: EditText
     private var noteId = 0
     private var isCancelling = false
-    lateinit var viewModel: NoteActivityViewModel
+    private lateinit var viewModel: NoteActivityViewModel
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
     private lateinit var noteCursor: Cursor
     private var courseIdPos = 0
@@ -95,23 +96,13 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun createLoaderCourses(): Loader<Cursor> {
         coursesQueryFinished = false
-        return object: CursorLoader(this){
-            override fun loadInBackground(): Cursor? {
-                val db = dbOpenHelper.readableDatabase
-                val courseColumns = arrayOf(
-                    CourseInfoEntry.COLUMN_COURSE_TITLE,
-                    CourseInfoEntry.COLUMN_COURSE_ID,
-                    CourseInfoEntry.ID
-                )
-                return db.run {
-                    query(
-                        CourseInfoEntry.TABLE_NAME,
-                        courseColumns, null, null, null, null,
-                        CourseInfoEntry.COLUMN_COURSE_TITLE
-                    )
-                }
-            }
-        }
+        val uri = Uri.parse("content://$AUTHORITY")
+        val courseColumns = arrayOf(
+            CourseInfoEntry.COLUMN_COURSE_TITLE,
+            CourseInfoEntry.COLUMN_COURSE_ID,
+            CourseInfoEntry.ID
+        )
+        return CursorLoader(this, uri, courseColumns, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE)
     }
 
     private fun createLoaderNote(): Loader<Cursor> {
@@ -338,8 +329,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         val cursor = adapterCourses.cursor
         cursor.moveToPosition(selectedPosition)
         val courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID)
-        val courseId = cursor.getString(courseIdPos)
-        return courseId
+        return cursor.getString(courseIdPos)
     }
 
     private fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){

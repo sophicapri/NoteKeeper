@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.socap.notekeeper">
 
     <application
@@ -9,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NoteKeeper">
+
         <activity
             android:name=".SettingsActivity"
             android:exported="true"
@@ -32,6 +34,13 @@
             android:name=".NoteActivity"
             android:label="@string/title_activity_note"
             android:theme="@style/Theme.NoteKeeper.NoActionBar" />
+
+        <provider
+            android:name=".NoteKeeperProvider"
+            android:authorities="com.socap.notekeeper.provider"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
     </application>
 
 </manifest>
