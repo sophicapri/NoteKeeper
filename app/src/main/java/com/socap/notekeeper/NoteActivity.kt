@@ -3,6 +3,7 @@ package com.socap.notekeeper
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -18,6 +19,7 @@ import androidx.loader.content.Loader
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.databinding.ActivityNoteBinding
+import java.util.concurrent.Executors
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
@@ -80,7 +82,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         if (!isNewNote) {
             LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
         }
-        //saveOriginalNoteValues()
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
@@ -237,7 +238,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             createNewNote()
 
         Log.i(TAG, "readDisplayStateValues: - notePosition = $noteId")
-        //note = DataManager.instance.notes[noteId]
     }
 
     private fun createNewNote() {
@@ -245,8 +245,11 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         values.put(NoteInfoEntry.COLUMN_COURSE_ID, "")
         values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, "")
         values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, "")
-        val db = dbOpenHelper.writableDatabase
-        noteId = db.insert(NoteInfoEntry.TABLE_NAME, null, values).toInt()
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            val db = dbOpenHelper.writableDatabase
+            noteId = db.insert(NoteInfoEntry.TABLE_NAME, null, values).toInt()
+        }
     }
 
     private fun saveOriginalNoteValues() {
@@ -309,8 +312,11 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private fun deleteNoteFromDatabase() {
         val selection = "${NoteInfoEntry.ID} = ?"
         val args = arrayOf(noteId.toString())
-        val db = dbOpenHelper.writableDatabase
-        db.delete(NoteInfoEntry.TABLE_NAME, selection, args)
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            val db = dbOpenHelper.writableDatabase
+            db.delete(NoteInfoEntry.TABLE_NAME, selection, args)
+        }
     }
 
     private fun storePreviousNoteValues() {
@@ -336,7 +342,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         return courseId
     }
 
-    fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){
+    private fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){
         val selection = "${NoteInfoEntry.ID} = ?"
         val args = arrayOf(noteId.toString())
 
@@ -345,8 +351,11 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, noteTitle)
         values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, noteText)
 
-        val db = dbOpenHelper.writableDatabase
-        db.update(NoteInfoEntry.TABLE_NAME, values, selection, args)
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            val db = dbOpenHelper.writableDatabase
+            db.update(NoteInfoEntry.TABLE_NAME, values, selection, args)
+        }
     }
 
     override fun onDestroy() {

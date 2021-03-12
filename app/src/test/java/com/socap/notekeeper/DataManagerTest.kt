@@ -72,8 +72,7 @@ class DataManagerTest {
         val noteTitle = "Test note title"
         val noteText = "This is the body of my test note"
 
-        val noteIndex = dm.createNewNote(course, noteTitle, noteText)
-
+        val noteIndex = dm.createNewNote(course!!, noteTitle, noteText)
         val compareNote = dm.notes[noteIndex]
         assertEquals(course, compareNote.course)
         assertEquals(noteTitle, compareNote.title)
