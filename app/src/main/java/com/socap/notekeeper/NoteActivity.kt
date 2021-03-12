@@ -83,51 +83,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         //saveOriginalNoteValues()
     }
 
- /*   private fun loadCourseData() {
-        val db = dbOpenHelper.readableDatabase
-        val courseColumns = arrayOf(
-            CourseInfoEntry.COLUMN_COURSE_TITLE,
-            CourseInfoEntry.COLUMN_COURSE_ID,
-            CourseInfoEntry.ID
-        )
-
-        val cursor = db.run {
-            query(
-                CourseInfoEntry.TABLE_NAME,
-                courseColumns, null, null, null, null,
-                CourseInfoEntry.COLUMN_COURSE_TITLE
-            )
-        }
-        adapterCourses.changeCursor(cursor)
-    }
-
-    private fun loadNoteData() {
-        val db = dbOpenHelper.readableDatabase
-
-        val selection = "${NoteInfoEntry.ID} = ?"
-        val selectionArgs: Array<String> = arrayOf(noteId.toString())
-
-        val noteColumns: Array<String> = arrayOf(
-            NoteInfoEntry.COLUMN_COURSE_ID,
-            NoteInfoEntry.COLUMN_NOTE_TITLE,
-            NoteInfoEntry.COLUMN_NOTE_TEXT
-        )
-
-        noteCursor = db.run {
-            query(
-                NoteInfoEntry.TABLE_NAME, noteColumns, selection, selectionArgs, null,
-                null, null
-            )
-        }
-
-        courseIdPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
-        noteTitlePos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
-        noteTextPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
-
-        noteCursor.moveToNext()
-        displayNote()
-    }*/
-
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         var loader: Loader<Cursor> = CursorLoader(this)
         if (id == LOADER_NOTES)
@@ -285,6 +240,15 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         //note = DataManager.instance.notes[noteId]
     }
 
+    private fun createNewNote() {
+        val values = ContentValues()
+        values.put(NoteInfoEntry.COLUMN_COURSE_ID, "")
+        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, "")
+        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, "")
+        val db = dbOpenHelper.writableDatabase
+        noteId = db.insert(NoteInfoEntry.TABLE_NAME, null, values).toInt()
+    }
+
     private fun saveOriginalNoteValues() {
         if (isNewNote)
             return
@@ -292,11 +256,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         note.title?.let { viewModel.originalNoteTitle = it }
         note.text?.let { viewModel.originalNoteText = it }
 
-    }
-
-    private fun createNewNote() {
-        val dm: DataManager = DataManager.instance
-        noteId = dm.createNewNote()
     }
 
     private fun displayNote() {
@@ -339,12 +298,19 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         if (isCancelling) {
             Log.i(TAG, "Cancelling note at position $noteId")
             if (isNewNote)
-                DataManager.instance.removeNote(noteId)
+                deleteNoteFromDatabase()
             else
                 storePreviousNoteValues()
         } else
             saveNote()
         Log.d(TAG, "onPause")
+    }
+
+    private fun deleteNoteFromDatabase() {
+        val selection = "${NoteInfoEntry.ID} = ?"
+        val args = arrayOf(noteId.toString())
+        val db = dbOpenHelper.writableDatabase
+        db.delete(NoteInfoEntry.TABLE_NAME, selection, args)
     }
 
     private fun storePreviousNoteValues() {
