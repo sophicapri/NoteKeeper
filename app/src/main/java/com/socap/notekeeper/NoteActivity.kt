@@ -1,5 +1,6 @@
 package com.socap.notekeeper
 
+import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
@@ -82,7 +83,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         //saveOriginalNoteValues()
     }
 
-    private fun loadCourseData() {
+ /*   private fun loadCourseData() {
         val db = dbOpenHelper.readableDatabase
         val courseColumns = arrayOf(
             CourseInfoEntry.COLUMN_COURSE_TITLE,
@@ -125,7 +126,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
         noteCursor.moveToNext()
         displayNote()
-    }
+    }*/
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         var loader: Loader<Cursor> = CursorLoader(this)
@@ -354,9 +355,32 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun saveNote() {
-   /*     note.course = spinnerCourses.selectedItem as CourseInfo
-        note.title = textNoteTitle.text.toString()
-        note.text = textNoteText.text.toString()*/
+        val courseId = selectedCourseId()
+        val noteTitle = textNoteTitle.text.toString()
+        val noteText = textNoteText.text.toString()
+        saveNoteToDatabase(courseId, noteTitle, noteText)
+    }
+
+    private fun selectedCourseId(): String {
+        val selectedPosition = spinnerCourses.selectedItemPosition
+        val cursor = adapterCourses.cursor
+        cursor.moveToPosition(selectedPosition)
+        val courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID)
+        val courseId = cursor.getString(courseIdPos)
+        return courseId
+    }
+
+    fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){
+        val selection = "${NoteInfoEntry.ID} = ?"
+        val args = arrayOf(noteId.toString())
+
+        val values = ContentValues()
+        values.put(NoteInfoEntry.COLUMN_COURSE_ID, courseId)
+        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, noteTitle)
+        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, noteText)
+
+        val db = dbOpenHelper.writableDatabase
+        db.update(NoteInfoEntry.TABLE_NAME, values, selection, args)
     }
 
     override fun onDestroy() {
