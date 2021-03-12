@@ -9,14 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 
 class NoteRecyclerAdapter(private val context: Context, private var cursor: Cursor?) :
     RecyclerView.Adapter<NoteRecyclerAdapter.ViewHolder>() {
     private val layoutInflater = LayoutInflater.from(context)
-    private var coursePos: Int = -1
-    private var noteTitlePos: Int = -1
-    private var idPos: Int = -1
+    private var coursePos: Int = POSITION_NOT_SET
+    private var noteTitlePos: Int = POSITION_NOT_SET
+    private var idPos: Int = POSITION_NOT_SET
     val TAG = "com.socap.notekeeper.NoteRecyclerAdapter"
 
     init {
@@ -28,7 +29,7 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
             return
 
         // get column indexes from cursor
-        cursor?.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)?.let { coursePos = it }
+        cursor?.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE)?.let { coursePos = it }
         cursor?.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)?.let { noteTitlePos = it }
         cursor?.getColumnIndex(NoteInfoEntry.ID)?.let { idPos = it }
     }

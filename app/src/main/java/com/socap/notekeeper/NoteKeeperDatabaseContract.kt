@@ -10,6 +10,10 @@ class NoteKeeperDatabaseContract private constructor(){
         const val COLUMN_COURSE_TITLE = "course_title"
         const val ID = "_id"
 
+        fun getQName(columnName: String) : String{
+            return "$TABLE_NAME.$columnName"
+        }
+
         // CREATE TABLE course_info (course_id, course_title)
         const val SQL_CREATE_TABLE =
             "CREATE TABLE $TABLE_NAME " +
@@ -24,6 +28,10 @@ class NoteKeeperDatabaseContract private constructor(){
         const val COLUMN_NOTE_TEXT = "note_text"
         const val COLUMN_COURSE_ID = "course_id"
         const val ID = "_id"
+
+        fun getQName(columnName: String) : String{
+            return "${TABLE_NAME}.$columnName"
+        }
 
         const val SQL_CREATE_TABLE =
             "CREATE TABLE $TABLE_NAME " +

@@ -1,6 +1,5 @@
 package com.socap.notekeeper
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
@@ -21,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.databinding.ActivityMainBinding
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     LoaderManager.LoaderCallbacks<Cursor> {
@@ -65,27 +64,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onRestart() {
+        super.onRestart()
         LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
-        updateNavHeader()
+        notRestart = false
+        Log.d(TAG, "onRestart: ")
     }
 
-    /*  private fun loadNotes() {
-          val db = dbOpenHelper.readableDatabase
-          val noteColumns: Array<String> = arrayOf(
-              NoteInfoEntry.COLUMN_NOTE_TITLE,
-              NoteInfoEntry.COLUMN_COURSE_ID,
-              NoteInfoEntry.ID
-          )
-          val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
-          val noteCursor: Cursor = db.run {
-              query(
-                  NoteInfoEntry.TABLE_NAME, noteColumns, null,
-                  null, null, null, noteOrderBy)
-          }
-          noteRecyclerAdapter.changeCursor(noteCursor)
-      }*/
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: ")
+        if (notRestart)
+            LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
+        updateNavHeader()
+    }
 
     private fun updateNavHeader() {
         val navigationView = binding.navView
@@ -202,22 +194,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        Log.d(TAG, "onCreateLoader: ")
         var loader: Loader<Cursor> = CursorLoader(this)
         if (id == LOADER_NOTES) {
             loader = object : CursorLoader(this) {
                 override fun loadInBackground(): Cursor? {
                     val db = dbOpenHelper.readableDatabase
                     val noteColumns: Array<String> = arrayOf(
+                        NoteInfoEntry.getQName(NoteInfoEntry.ID),
                         NoteInfoEntry.COLUMN_NOTE_TITLE,
-                        NoteInfoEntry.COLUMN_COURSE_ID,
-                        NoteInfoEntry.ID
+                        CourseInfoEntry.COLUMN_COURSE_TITLE
                     )
                     val noteOrderBy =
-                        "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+                        "${CourseInfoEntry.COLUMN_COURSE_TITLE},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+
+                    // note_info JOIN course_info ON note_info.course_id = course_info.course_id
+                    val tablesWithJoin =
+                        "${NoteInfoEntry.TABLE_NAME} JOIN ${CourseInfoEntry.TABLE_NAME} ON " +
+                                "${NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID)} = " +
+                                CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID)
                     return db.run {
                         query(
-                            NoteInfoEntry.TABLE_NAME, noteColumns, null,
+                            tablesWithJoin, noteColumns, null,
                             null, null, null, noteOrderBy
                         )
                     }
@@ -229,9 +226,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         Log.d(TAG, "onLoadFinished: ")
-        if (loader.id == LOADER_NOTES && notRestart) {
+        if (loader.id == LOADER_NOTES) {
             noteRecyclerAdapter.changeCursor(data)
-            notRestart = true
         }
     }
 
