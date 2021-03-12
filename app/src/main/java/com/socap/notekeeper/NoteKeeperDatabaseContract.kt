@@ -10,6 +10,10 @@ class NoteKeeperDatabaseContract private constructor(){
         const val COLUMN_COURSE_TITLE = "course_title"
         const val ID = "_id"
 
+        // CREATE INDEX course_info_index1 ON course_info(course_title)
+        const val INDEX1 = "${TABLE_NAME}_index1"
+        const val SQL_CREATE_INDEX1 = "CREATE INDEX $INDEX1 ON $TABLE_NAME($COLUMN_COURSE_TITLE)"
+
         fun getQName(columnName: String) : String{
             return "$TABLE_NAME.$columnName"
         }
@@ -28,6 +32,9 @@ class NoteKeeperDatabaseContract private constructor(){
         const val COLUMN_NOTE_TEXT = "note_text"
         const val COLUMN_COURSE_ID = "course_id"
         const val ID = "_id"
+
+        const val INDEX1 = "${TABLE_NAME}_index1"
+        const val SQL_CREATE_INDEX1 = "CREATE INDEX $INDEX1 ON ${TABLE_NAME}(${COLUMN_NOTE_TITLE})"
 
         fun getQName(columnName: String) : String{
             return "${TABLE_NAME}.$columnName"
