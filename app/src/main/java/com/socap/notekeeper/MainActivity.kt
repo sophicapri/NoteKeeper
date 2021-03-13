@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 override fun loadInBackground(): Cursor? {
                     val db = dbOpenHelper.readableDatabase
                     val noteColumns: Array<String> = arrayOf(
-                        NoteInfoEntry.getQName(NoteInfoEntry.ID),
+                        NoteInfoEntry.getQName(NoteInfoEntry._ID),
                         NoteInfoEntry.COLUMN_NOTE_TITLE,
                         CourseInfoEntry.COLUMN_COURSE_TITLE
                     )

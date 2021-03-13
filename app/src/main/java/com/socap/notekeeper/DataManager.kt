@@ -262,7 +262,7 @@ class DataManager private constructor() {
                 NoteInfoEntry.COLUMN_NOTE_TITLE,
                 NoteInfoEntry.COLUMN_NOTE_TEXT,
                 NoteInfoEntry.COLUMN_COURSE_ID,
-                NoteInfoEntry.ID
+                NoteInfoEntry._ID
             )
             val noteOrderBy = "${NoteInfoEntry.COLUMN_COURSE_ID},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
             val noteCursor: Cursor = db.run {
@@ -293,7 +293,7 @@ class DataManager private constructor() {
             val noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
             val noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
             val courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
-            val idPos = cursor.getColumnIndex(NoteInfoEntry.ID)
+            val idPos = cursor.getColumnIndex(NoteInfoEntry._ID)
 
             val dm = instance
             dm.notes.clear()

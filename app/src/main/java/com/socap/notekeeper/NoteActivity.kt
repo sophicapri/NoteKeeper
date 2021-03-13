@@ -18,13 +18,12 @@ import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
-import com.socap.notekeeper.NoteKeeperProvider.Companion.AUTHORITY
+import com.socap.notekeeper.NoteKeeperProviderContract.Companion.AUTHORITY
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
-    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityNoteBinding
     private var note: NoteInfo = NoteInfo()
     private var isNewNote = false
@@ -100,7 +99,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         val courseColumns = arrayOf(
             CourseInfoEntry.COLUMN_COURSE_TITLE,
             CourseInfoEntry.COLUMN_COURSE_ID,
-            CourseInfoEntry.ID
+            CourseInfoEntry._ID
         )
         return CursorLoader(this, uri, courseColumns, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE)
     }
@@ -111,7 +110,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             override fun loadInBackground(): Cursor? {
                 val db = dbOpenHelper.readableDatabase
 
-                val selection = "${NoteInfoEntry.ID} = ?"
+                val selection = "${NoteInfoEntry._ID} = ?"
                 val selectionArgs: Array<String> = arrayOf(noteId.toString())
 
                 val noteColumns: Array<String> = arrayOf(
@@ -301,7 +300,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun deleteNoteFromDatabase() {
-        val selection = "${NoteInfoEntry.ID} = ?"
+        val selection = "${NoteInfoEntry._ID} = ?"
         val args = arrayOf(noteId.toString())
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
@@ -333,7 +332,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){
-        val selection = "${NoteInfoEntry.ID} = ?"
+        val selection = "${NoteInfoEntry._ID} = ?"
         val args = arrayOf(noteId.toString())
 
         val values = ContentValues()
@@ -358,5 +357,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         const val ID_NOT_SET = -1
         const val LOADER_NOTES = 0
         const val LOADER_COURSES = 1
+        private val TAG = NoteActivity::class.java.simpleName
     }
 }

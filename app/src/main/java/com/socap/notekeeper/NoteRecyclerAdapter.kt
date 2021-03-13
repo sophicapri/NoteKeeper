@@ -31,7 +31,7 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
         // get column indexes from cursor
         cursor?.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE)?.let { coursePos = it }
         cursor?.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)?.let { noteTitlePos = it }
-        cursor?.getColumnIndex(NoteInfoEntry.ID)?.let { idPos = it }
+        cursor?.getColumnIndex(NoteInfoEntry._ID)?.let { idPos = it }
     }
 
     fun changeCursor(cursor: Cursor?) {
