@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
+import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -196,43 +197,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         var loader: Loader<Cursor> = CursorLoader(this)
         if (id == LOADER_NOTES) {
-            loader = object : CursorLoader(this) {
-                override fun loadInBackground(): Cursor? {
-                    val db = dbOpenHelper.readableDatabase
-                    val noteColumns: Array<String> = arrayOf(
-                        NoteInfoEntry.getQName(NoteInfoEntry._ID),
-                        NoteInfoEntry.COLUMN_NOTE_TITLE,
-                        CourseInfoEntry.COLUMN_COURSE_TITLE
-                    )
-                    val noteOrderBy =
-                        "${CourseInfoEntry.COLUMN_COURSE_TITLE},${NoteInfoEntry.COLUMN_NOTE_TITLE}"
+            val noteColumns: Array<String> = arrayOf(
+                Notes._ID,
+                Notes.COLUMN_NOTE_TITLE,
+                Notes.COLUMN_COURSE_TITLE
+            )
+            val noteOrderBy = "${Notes.COLUMN_COURSE_TITLE},${Notes.COLUMN_NOTE_TITLE}"
 
-                    // note_info JOIN course_info ON note_info.course_id = course_info.course_id
-                    val tablesWithJoin =
-                        "${NoteInfoEntry.TABLE_NAME} JOIN ${CourseInfoEntry.TABLE_NAME} ON " +
-                                "${NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID)} = " +
-                                CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID)
-                    return db.run {
-                        query(
-                            tablesWithJoin, noteColumns, null,
-                            null, null, null, noteOrderBy
-                        )
-                    }
-                }
-            }
+            loader =
+                CursorLoader(this, Notes.CONTENT_EXPANDED_URI, noteColumns,
+                    null, null, noteOrderBy)
         }
         return loader
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        Log.d(TAG, "onLoadFinished: ")
         if (loader.id == LOADER_NOTES) {
             noteRecyclerAdapter.changeCursor(data)
         }
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        Log.d(TAG, "onLoaderReset: ")
         if (loader.id == LOADER_NOTES)
             noteRecyclerAdapter.changeCursor(null)
     }

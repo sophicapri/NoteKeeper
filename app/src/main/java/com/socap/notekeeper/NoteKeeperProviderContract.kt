@@ -4,17 +4,17 @@ import android.net.Uri
 
 class NoteKeeperProviderContract private constructor() {
 
-    private interface CoursesIdColumns {
+    protected interface CoursesIdColumns {
         val COLUMN_COURSE_ID: String
             get() = "course_id"
     }
 
-    private interface CoursesColumns {
+    protected interface CoursesColumns {
         val COLUMN_COURSE_TITLE: String
             get() = "course_title"
     }
 
-    private interface NotesColumns {
+    protected interface NotesColumns {
         val COLUMN_NOTE_TITLE: String
             get() = "note_title"
         val COLUMN_NOTE_TEXT: String
@@ -28,13 +28,15 @@ class NoteKeeperProviderContract private constructor() {
         val CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH)
     }
 
-    object Notes : BaseColumns, NotesColumns, CoursesIdColumns {
+    object Notes : BaseColumns, NotesColumns, CoursesIdColumns, CoursesColumns {
         const val PATH = "notes"
         val CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH)
+        const val PATH_EXPANDED = "notes_expanded"
+        val CONTENT_EXPANDED_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH_EXPANDED)
     }
 
     companion object {
         const val AUTHORITY = "com.socap.notekeeper.provider"
-        val AUTHORITY_URI = Uri.parse("content://$AUTHORITY")
+        val AUTHORITY_URI: Uri = Uri.parse("content://$AUTHORITY")
     }
 }
