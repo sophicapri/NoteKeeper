@@ -19,6 +19,7 @@ import androidx.loader.content.Loader
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Companion.AUTHORITY
+import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
 
@@ -95,13 +96,13 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun createLoaderCourses(): Loader<Cursor> {
         coursesQueryFinished = false
-        val uri = Uri.parse("content://$AUTHORITY")
+        val uri = Courses.CONTENT_URI
         val courseColumns = arrayOf(
-            CourseInfoEntry.COLUMN_COURSE_TITLE,
-            CourseInfoEntry.COLUMN_COURSE_ID,
-            CourseInfoEntry._ID
+            Courses.COLUMN_COURSE_TITLE,
+            Courses.COLUMN_COURSE_ID,
+            Courses._ID
         )
-        return CursorLoader(this, uri, courseColumns, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE)
+        return CursorLoader(this, uri, courseColumns, null, null, Courses.COLUMN_COURSE_TITLE)
     }
 
     private fun createLoaderNote(): Loader<Cursor> {

@@ -18,7 +18,6 @@ class NoteKeeperProvider : ContentProvider() {
         private var uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
         private const val COURSES = 0
         private const val NOTES = 1
-        private const val NOTES_EXPANDED = 2
 
         init {
             uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH, COURSES)
