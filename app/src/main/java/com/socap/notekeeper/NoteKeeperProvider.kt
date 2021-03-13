@@ -1,11 +1,13 @@
 package com.socap.notekeeper
 
 import android.content.ContentProvider
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
+import android.util.Log
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
@@ -45,7 +47,24 @@ class NoteKeeperProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        TODO("Implement this to handle requests to insert a new row.")
+        val db = dbOpenHelper.writableDatabase
+        val rowId: Long
+        var rowUri: Uri? = null
+        when (uriMatcher.match(uri)) {
+            NOTES -> {
+                rowId = db.insert(NoteInfoEntry.TABLE_NAME, null, values)
+                // content://com.socap.notekeeper.provider/notes/1
+                rowUri = ContentUris.withAppendedId(Notes.CONTENT_URI, rowId)
+            }
+            COURSES -> {
+                rowId = db.insert(CourseInfoEntry.TABLE_NAME, null, values)
+                rowUri = ContentUris.withAppendedId(Courses.CONTENT_URI, rowId)
+            }
+            NOTES_EXPANDED -> {
+                // throw exception --> read-only table
+            }
+        }
+        return rowUri
     }
 
     override fun onCreate(): Boolean {
@@ -92,11 +111,20 @@ class NoteKeeperProvider : ContentProvider() {
                     projection[idx]
         }
 
-        val tablesWithJoin = "${NoteInfoEntry.TABLE_NAME} JOIN ${CourseInfoEntry.TABLE_NAME} ON " +
-                "${NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID)} = " +
-                CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID)
+        val tablesWithJoin =
+            "${NoteInfoEntry.TABLE_NAME} JOIN ${CourseInfoEntry.TABLE_NAME} ON " +
+                    "${NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID)} = " +
+                    CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID)
 
-        return db.query(tablesWithJoin, columns, selection, selectionArgs, null, null, sortOrder)
+        return db.query(
+            tablesWithJoin,
+            columns,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            sortOrder
+        )
     }
 
     override fun update(

@@ -4,17 +4,17 @@ import android.net.Uri
 
 class NoteKeeperProviderContract private constructor() {
 
-    protected interface CoursesIdColumns {
+    private interface CoursesIdColumns {
         val COLUMN_COURSE_ID: String
             get() = "course_id"
     }
 
-    protected interface CoursesColumns {
+    private interface CoursesColumns {
         val COLUMN_COURSE_TITLE: String
             get() = "course_title"
     }
 
-    protected interface NotesColumns {
+    private interface NotesColumns {
         val COLUMN_NOTE_TITLE: String
             get() = "note_title"
         val COLUMN_NOTE_TEXT: String

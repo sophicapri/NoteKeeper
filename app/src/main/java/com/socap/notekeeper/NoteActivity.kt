@@ -20,6 +20,7 @@ import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Companion.AUTHORITY
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
+import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
 
@@ -42,6 +43,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private lateinit var adapterCourses: SimpleCursorAdapter
     private var coursesQueryFinished = false
     private var noteQueryFinished = false
+    private var noteUri: Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -209,10 +211,10 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun sendEmail() {
-        val course = spinnerCourses.selectedItem as CourseInfo
+        //val course = spinnerCourses.selectedItem as CourseInfo
         val subject = textNoteTitle.text.toString()
-        val text = "Check out what I learned in the Pluralsight course \"" +
-                "${course.title}\"\n${textNoteText.text}"
+        val text = "Check out what I learned in the Pluralsight course \"" //+
+              //  "${course.title}\"\n${textNoteText.text}"
 
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "message/rfc2822"
@@ -233,14 +235,15 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun createNewNote() {
         val values = ContentValues()
-        values.put(NoteInfoEntry.COLUMN_COURSE_ID, "")
-        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, "")
-        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, "")
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            val db = dbOpenHelper.writableDatabase
-            noteId = db.insert(NoteInfoEntry.TABLE_NAME, null, values).toInt()
-        }
+        values.put(Notes.COLUMN_COURSE_ID, "")
+        values.put(Notes.COLUMN_NOTE_TITLE, "")
+        values.put(Notes.COLUMN_NOTE_TEXT, "")
+
+       // val executor = Executors.newSingleThreadExecutor()
+        //executor.execute {
+            noteUri = contentResolver.insert(Notes.CONTENT_URI, values)
+        //}
+
     }
 
     private fun saveOriginalNoteValues() {
