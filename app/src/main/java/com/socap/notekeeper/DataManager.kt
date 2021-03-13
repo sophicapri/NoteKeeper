@@ -133,7 +133,7 @@ class DataManager private constructor() {
             it.getModule("java_core_m03")?.isComplete = true
             mNotes.add(
                 NoteInfo(
-                    course = course, title = "Compiler options",
+                    course = it, title = "Compiler options",
                     text = "The -jar option isn't compatible with with the -cp option"
                 )
             )
@@ -305,7 +305,7 @@ class DataManager private constructor() {
 
                 val noteCourse = dm.getCourse(courseId)
                 noteCourse?.let {
-                    val note = NoteInfo(id, noteCourse, noteTitle, noteText)
+                    val note = NoteInfo(id, it, noteTitle, noteText)
                     dm.notes.add(note)
                 }
             }

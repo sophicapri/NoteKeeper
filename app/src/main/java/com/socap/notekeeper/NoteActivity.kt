@@ -1,5 +1,6 @@
 package com.socap.notekeeper
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
@@ -22,12 +23,13 @@ import com.socap.notekeeper.NoteKeeperProviderContract.Companion.AUTHORITY
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityNoteBinding
+import java.lang.NullPointerException
 import java.util.concurrent.Executors
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
     private lateinit var binding: ActivityNoteBinding
-    private var note: NoteInfo = NoteInfo()
+    private var note: NoteInfo = NoteInfo(course = DataManager.instance.courses[0], title =  "",text = "")
     private var isNewNote = false
     private lateinit var spinnerCourses: Spinner
     private lateinit var textNoteTitle: EditText
@@ -43,7 +45,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private lateinit var adapterCourses: SimpleCursorAdapter
     private var coursesQueryFinished = false
     private var noteQueryFinished = false
-    private var noteUri: Uri? = null
+    private lateinit var noteUri: Uri
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,33 +111,19 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun createLoaderNote(): Loader<Cursor> {
         noteQueryFinished = false
-        return object : CursorLoader(this) {
-            override fun loadInBackground(): Cursor? {
-                val db = dbOpenHelper.readableDatabase
-
-                val selection = "${NoteInfoEntry._ID} = ?"
-                val selectionArgs: Array<String> = arrayOf(noteId.toString())
-
-                val noteColumns: Array<String> = arrayOf(
-                    NoteInfoEntry.COLUMN_COURSE_ID,
-                    NoteInfoEntry.COLUMN_NOTE_TITLE,
-                    NoteInfoEntry.COLUMN_NOTE_TEXT
-                )
-
-                return db.run {
-                    query(
-                        NoteInfoEntry.TABLE_NAME, noteColumns, selection, selectionArgs, null,
-                        null, null
-                    )
-                }
-            }
-        }
+        val noteColumns: Array<String> = arrayOf(
+            Notes.COLUMN_COURSE_ID,
+            Notes.COLUMN_NOTE_TITLE,
+            Notes.COLUMN_NOTE_TEXT
+        )
+        noteUri = ContentUris.withAppendedId(Notes.CONTENT_URI, noteId.toLong())
+        return CursorLoader(this, noteUri, noteColumns, null, null, null)
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor) {
         if (loader.id == LOADER_NOTES)
             loadFinishedNote(data)
-        else if (loader.id == LOADER_COURSES){
+        else if (loader.id == LOADER_COURSES) {
             adapterCourses.changeCursor(data)
             coursesQueryFinished = true
             displayNoteWhenQueriesFinished()
@@ -153,7 +141,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun displayNoteWhenQueriesFinished() {
-        if(noteQueryFinished && coursesQueryFinished) {
+        if (noteQueryFinished && coursesQueryFinished) {
             displayNote()
             saveOriginalNoteValues()
         }
@@ -187,7 +175,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                 isCancelling = true
                 finish()
             }
-            R.id.action_next -> moveNext()
+            R.id.action_next ->  moveNext()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -214,7 +202,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         //val course = spinnerCourses.selectedItem as CourseInfo
         val subject = textNoteTitle.text.toString()
         val text = "Check out what I learned in the Pluralsight course \"" //+
-              //  "${course.title}\"\n${textNoteText.text}"
+        //  "${course.title}\"\n${textNoteText.text}"
 
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "message/rfc2822"
@@ -239,17 +227,20 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         values.put(Notes.COLUMN_NOTE_TITLE, "")
         values.put(Notes.COLUMN_NOTE_TEXT, "")
 
-       // val executor = Executors.newSingleThreadExecutor()
-        //executor.execute {
-            noteUri = contentResolver.insert(Notes.CONTENT_URI, values)
-        //}
-
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            try {
+                noteUri = contentResolver.insert(Notes.CONTENT_URI, values)!!
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "createNewNote: ${e.message}", e.cause)
+            }
+        }
     }
 
     private fun saveOriginalNoteValues() {
         if (isNewNote)
             return
-        note.course?.courseId?.let { viewModel.originalNoteCourseId = it }
+        note.course.courseId?.let { viewModel.originalNoteCourseId = it }
         note.title?.let { viewModel.originalNoteTitle = it }
         note.text?.let { viewModel.originalNoteText = it }
 
@@ -262,15 +253,8 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
         val courseIndex = getIndexOfCourseId(courseId)
         spinnerCourses.setSelection(courseIndex)
-        val courseTitle = spinnerCourses.selectedItem.toString()
         textNoteTitle.setText(noteTitle)
         textNoteText.setText(noteText)
-
-
-        note = NoteInfo(
-            course = CourseInfo(courseId = courseId, title = courseTitle),
-            title = noteTitle, text = noteText
-        )
     }
 
     private fun getIndexOfCourseId(courseId: String): Int {
@@ -304,12 +288,9 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun deleteNoteFromDatabase() {
-        val selection = "${NoteInfoEntry._ID} = ?"
-        val args = arrayOf(noteId.toString())
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            val db = dbOpenHelper.writableDatabase
-            db.delete(NoteInfoEntry.TABLE_NAME, selection, args)
+            contentResolver.delete(noteUri, null, null)
         }
     }
 
@@ -335,10 +316,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         return cursor.getString(courseIdPos)
     }
 
-    private fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String){
-        val selection = "${NoteInfoEntry._ID} = ?"
-        val args = arrayOf(noteId.toString())
-
+    private fun saveNoteToDatabase(courseId: String, noteTitle: String, noteText: String) {
         val values = ContentValues()
         values.put(NoteInfoEntry.COLUMN_COURSE_ID, courseId)
         values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, noteTitle)
@@ -346,8 +324,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            val db = dbOpenHelper.writableDatabase
-            db.update(NoteInfoEntry.TABLE_NAME, values, selection, args)
+            contentResolver.update(noteUri, values, null, null)
         }
     }
 

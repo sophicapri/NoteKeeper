@@ -5,18 +5,18 @@ import android.os.Parcelable
 import java.util.*
 
 class NoteInfo : Parcelable {
-    var course: CourseInfo? = null
+    lateinit var course: CourseInfo
     var title: String? = null
     var text: String? = null
     val id: Int
         get() = _id
     private var _id = -1
     private val compareKey: String
-        get() = "${course?.courseId}|$title|$text"
+        get() = "${course.courseId}|$title|$text"
 
     constructor()
 
-    constructor(id: Int = -1, course: CourseInfo?, title: String?, text: String? = null) {
+    constructor(id: Int = -1, course: CourseInfo, title: String?, text: String? = null) {
         this._id = id
         this.course = course
         this.title = title

@@ -7,7 +7,6 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import android.util.Log
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
@@ -23,20 +22,51 @@ class NoteKeeperProvider : ContentProvider() {
         private const val COURSES = 0
         private const val NOTES = 1
         private const val NOTES_EXPANDED = 2
+        private const val NOTES_ROW = 3
+        private const val COURSES_ROW = 4
+        private const val NOTES_EXPANDED_ROW = 5
 
         init {
             uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH, COURSES)
             uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH, NOTES)
-            uriMatcher.addURI(
-                NoteKeeperProviderContract.AUTHORITY,
-                Notes.PATH_EXPANDED,
-                NOTES_EXPANDED
-            )
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED, NOTES_EXPANDED)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, "${Notes.PATH}/#", NOTES_ROW)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH + "/#", COURSES_ROW)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED + "/#",
+                NOTES_EXPANDED_ROW)
         }
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-        TODO("Implement this to handle requests to delete one or more rows")
+        val rowId: Long
+        val rowSelection: String?
+        val rowSelectionArgs: Array<String>?
+        var rows = -1
+        val db: SQLiteDatabase = dbOpenHelper.readableDatabase
+
+        when (uriMatcher.match(uri)) {
+            COURSES -> rows = db.delete(CourseInfoEntry.TABLE_NAME, selection, selectionArgs)
+            NOTES -> rows = db.delete(NoteInfoEntry.TABLE_NAME, selection, selectionArgs)
+            NOTES_EXPANDED -> {
+                // throw exception saying that this is a read-only table
+            }
+            COURSES_ROW -> {
+                rowId = ContentUris.parseId(uri)
+                rowSelection = CourseInfoEntry._ID + " = ?"
+                rowSelectionArgs = arrayOf(rowId.toString())
+                rows = db.delete(CourseInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs)
+            }
+            NOTES_ROW -> {
+                rowId = ContentUris.parseId(uri)
+                rowSelection = NoteInfoEntry._ID + " = ?"
+                rowSelectionArgs = arrayOf(java.lang.Long.toString(rowId))
+                rows = db.delete(NoteInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs)
+            }
+            NOTES_EXPANDED_ROW -> {
+                // throw exception saying that this is a read-only table
+            }
+        }
+        return rows
     }
 
     override fun getType(uri: Uri): String? {
@@ -90,7 +120,20 @@ class NoteKeeperProvider : ContentProvider() {
                 NoteInfoEntry.TABLE_NAME, projection, selection,
                 selectionArgs, null, null, sortOrder
             )
-            else -> notesExpandedQuery(db, projection, selection, selectionArgs, sortOrder)
+            NOTES_EXPANDED -> notesExpandedQuery(
+                db, projection, selection,
+                selectionArgs, sortOrder
+            )
+            NOTES_ROW -> {
+                val rowId = ContentUris.parseId(uri)
+                val rowSelection = "${NoteInfoEntry._ID} = ?"
+                val rowSelectionArgs = arrayOf(rowId.toString())
+                db.query(
+                    NoteInfoEntry.TABLE_NAME, projection, rowSelection, rowSelectionArgs, null,
+                    null, null
+                )
+            }
+            else -> null
         }
         return cursor
     }
@@ -131,6 +174,36 @@ class NoteKeeperProvider : ContentProvider() {
         uri: Uri, values: ContentValues?, selection: String?,
         selectionArgs: Array<String>?
     ): Int {
-        TODO("Implement this to handle requests to update one or more rows.")
+        val rowId: Long
+        val rowSelection: String?
+        val rowSelectionArgs: Array<String>?
+        var rows = -1
+        val db: SQLiteDatabase = dbOpenHelper.readableDatabase
+
+        when (uriMatcher.match(uri)) {
+            COURSES -> rows =
+                db.update(CourseInfoEntry.TABLE_NAME, values, selection, selectionArgs)
+            NOTES -> rows = db.update(NoteInfoEntry.TABLE_NAME, values, selection, selectionArgs)
+            NOTES_EXPANDED -> {
+                // throw exception saying that this is a read-only table
+            }
+            COURSES_ROW -> {
+                rowId = ContentUris.parseId(uri)
+                rowSelection = CourseInfoEntry._ID + " = ?"
+                rowSelectionArgs = arrayOf(java.lang.Long.toString(rowId))
+                rows =
+                    db.update(CourseInfoEntry.TABLE_NAME, values, rowSelection, rowSelectionArgs)
+            }
+            NOTES_ROW -> {
+                rowId = ContentUris.parseId(uri)
+                rowSelection = NoteInfoEntry._ID + " = ?"
+                rowSelectionArgs = arrayOf(java.lang.Long.toString(rowId))
+                rows = db.update(NoteInfoEntry.TABLE_NAME, values, rowSelection, rowSelectionArgs)
+            }
+            NOTES_EXPANDED_ROW -> {
+                // throw exception saying that this is a read-only table
+            }
+        }
+        return rows
     }
 }
