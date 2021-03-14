@@ -129,12 +129,14 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         }
     }
 
+    // TODO: fix issue with backstack
     private fun loadFinishedNote(data: Cursor) {
         noteCursor = data
         courseIdPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
         noteTitlePos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
         noteTextPos = noteCursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
-        noteCursor.moveToNext()
+
+        noteCursor.moveToFirst()
         noteQueryFinished = true
         displayNoteWhenQueriesFinished()
     }
@@ -174,7 +176,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                 isCancelling = true
                 finish()
             }
-            R.id.action_next ->  moveNext()
+            R.id.action_next -> moveNext()
             R.id.action_set_reminder -> showReminderNotification()
         }
         return super.onOptionsItemSelected(item)
@@ -183,7 +185,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private fun showReminderNotification() {
         val noteTitle: String = textNoteTitle.text.toString()
         val noteText: String = textNoteText.text.toString()
-        val noteId = ContentUris.parseId(noteUri).toInt()
+        // val noteId = ContentUris.parseId(noteUri).toInt()
 
         val notificationHelper = NotificationHelper(this)
         val nb: NotificationCompat.Builder = notificationHelper
