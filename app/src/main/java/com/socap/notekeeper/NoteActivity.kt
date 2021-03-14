@@ -13,23 +13,22 @@ import android.widget.EditText
 import android.widget.SimpleCursorAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
-import com.socap.notekeeper.NoteKeeperProviderContract.Companion.AUTHORITY
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityNoteBinding
-import java.lang.NullPointerException
 import java.util.concurrent.Executors
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
     private lateinit var binding: ActivityNoteBinding
-    private var note: NoteInfo = NoteInfo(course = DataManager.instance.courses[0], title =  "",text = "")
+    private var note: NoteInfo = NoteInfo()
     private var isNewNote = false
     private lateinit var spinnerCourses: Spinner
     private lateinit var textNoteTitle: EditText
@@ -176,8 +175,20 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                 finish()
             }
             R.id.action_next ->  moveNext()
+            R.id.action_set_reminder -> showReminderNotification()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showReminderNotification() {
+        val noteTitle: String = textNoteTitle.text.toString()
+        val noteText: String = textNoteText.text.toString()
+        val noteId = ContentUris.parseId(noteUri).toInt()
+
+        val notificationHelper = NotificationHelper(this)
+        val nb: NotificationCompat.Builder = notificationHelper
+            .getChannelNotification(noteTitle, noteText, noteId)
+        notificationHelper.manager.notify(NotificationHelper.NOTIFICATION_ID, nb.build())
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {

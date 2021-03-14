@@ -14,9 +14,7 @@ class NoteInfo : Parcelable {
     private val compareKey: String
         get() = "${course.courseId}|$title|$text"
 
-    constructor()
-
-    constructor(id: Int = -1, course: CourseInfo, title: String?, text: String? = null) {
+    constructor(id: Int = -1, course: CourseInfo = CourseInfo(), title: String? = null, text: String? = null) {
         this._id = id
         this.course = course
         this.title = title

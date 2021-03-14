@@ -1,9 +1,6 @@
 package com.socap.notekeeper
 
-import android.content.ContentProvider
-import android.content.ContentUris
-import android.content.ContentValues
-import android.content.UriMatcher
+import android.content.*
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
@@ -25,6 +22,7 @@ class NoteKeeperProvider : ContentProvider() {
         private const val NOTES_ROW = 3
         private const val COURSES_ROW = 4
         private const val NOTES_EXPANDED_ROW = 5
+        private const val MIME_VENDOR_TYPE = "vnd.${NoteKeeperProviderContract.AUTHORITY}."
 
         init {
             uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH, COURSES)
@@ -59,7 +57,7 @@ class NoteKeeperProvider : ContentProvider() {
             NOTES_ROW -> {
                 rowId = ContentUris.parseId(uri)
                 rowSelection = NoteInfoEntry._ID + " = ?"
-                rowSelectionArgs = arrayOf(java.lang.Long.toString(rowId))
+                rowSelectionArgs = arrayOf(rowId.toString())
                 rows = db.delete(NoteInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs)
             }
             NOTES_EXPANDED_ROW -> {
@@ -70,10 +68,23 @@ class NoteKeeperProvider : ContentProvider() {
     }
 
     override fun getType(uri: Uri): String? {
-        TODO(
-            "Implement this to handle requests for the MIME type of the data" +
-                    "at the given URI"
-        )
+        var mimeType: String? = null
+        when (uriMatcher.match(uri)) {
+            COURSES -> // vnd.android.cursor.dir/vnd.com.socap.notekeeper.provider.courses
+                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
+                        MIME_VENDOR_TYPE + Courses.PATH
+            NOTES -> mimeType =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH
+            NOTES_EXPANDED -> mimeType =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED
+            COURSES_ROW -> mimeType =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Courses.PATH
+            NOTES_ROW -> mimeType =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH
+            NOTES_EXPANDED_ROW -> mimeType =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED
+        }
+        return mimeType
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {

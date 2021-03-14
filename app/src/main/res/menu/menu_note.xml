@@ -4,9 +4,13 @@
     tools:context="com.socap.notekeeper.NoteActivity">
     <item
         android:id="@+id/action_send_email"
-        android:orderInCategory="100"
+        android:orderInCategory="0"
         android:title="@string/send_as_email"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_set_reminder"
+        android:title="@string/set_reminder"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/action_cancel"
         android:icon="@android:drawable/ic_menu_revert"
