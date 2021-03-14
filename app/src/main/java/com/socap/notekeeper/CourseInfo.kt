@@ -5,18 +5,18 @@ import android.os.Parcelable
 import java.util.*
 
 class CourseInfo : Parcelable {
-    val courseId: String?
+    val courseId: String
     val title: String
     private val modules: List<ModuleInfo>
 
-    constructor(courseId: String? = null, title: String = "", modules: List<ModuleInfo> = listOf()) {
+    constructor(courseId: String = "", title: String = "", modules: List<ModuleInfo> = listOf()) {
         this.courseId = courseId
         this.title = title
         this.modules = modules
     }
 
     private constructor(source: Parcel) {
-        courseId = source.readString()
+        courseId = source.readString()!!
         title = source.readString()!!
         modules = ArrayList()
         source.readTypedList(modules, ModuleInfo.CREATOR)

@@ -38,7 +38,6 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
         noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId)
 
         // This image is used as the notification's large icon (thumbnail).
-        // TODO: Remove this if your notification has no relevant thumbnail.
         val picture = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
 
 

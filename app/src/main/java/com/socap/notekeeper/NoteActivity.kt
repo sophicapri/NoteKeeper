@@ -251,9 +251,9 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private fun saveOriginalNoteValues() {
         if (isNewNote)
             return
-        note.course.courseId?.let { viewModel.originalNoteCourseId = it }
-        note.title?.let { viewModel.originalNoteTitle = it }
-        note.text?.let { viewModel.originalNoteText = it }
+        viewModel.originalNoteCourseId = note.course.courseId
+        viewModel.originalNoteTitle = note.title
+        viewModel.originalNoteText = note.text
 
     }
 

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 
-//TODO : MOVE TO ROOM
+
 class NoteKeeperOpenHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 

@@ -6,15 +6,15 @@ import java.util.*
 
 class NoteInfo : Parcelable {
     lateinit var course: CourseInfo
-    var title: String? = null
-    var text: String? = null
+    var title: String = ""
+    var text: String = ""
     val id: Int
         get() = _id
     private var _id = -1
     private val compareKey: String
         get() = "${course.courseId}|$title|$text"
 
-    constructor(id: Int = -1, course: CourseInfo = CourseInfo(), title: String? = null, text: String? = null) {
+    constructor(id: Int = -1, course: CourseInfo = CourseInfo(), title: String = "", text: String = "") {
         this._id = id
         this.course = course
         this.title = title
