@@ -37,6 +37,9 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
         val noteActivityIntent = Intent(context, NoteActivity::class.java)
         noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId)
 
+        val backupServiceIntent = Intent(context, NotificationActionReceiver::class.java)
+        backupServiceIntent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES)
+
         // This image is used as the notification's large icon (thumbnail).
         val picture = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
 
@@ -72,6 +75,15 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
                 PendingIntent.getActivity(
                     context,
                     0, Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+            .addAction(
+                0,
+                "Backup notes",
+                PendingIntent.getBroadcast(
+                    this,
+                    0, backupServiceIntent,
                     PendingIntent.FLAG_IMMUTABLE
                 )
             )
