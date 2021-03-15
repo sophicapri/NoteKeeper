@@ -2,7 +2,6 @@ package com.socap.notekeeper
 
 import android.content.Intent
 import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,7 +10,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -26,8 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
-import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityMainBinding
 import java.util.concurrent.Executors
@@ -88,12 +84,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onRestart()
         LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
         notRestart = false
-        Log.d(TAG, "onRestart: ")
+        Log.i(TAG, "*** onRestart: *** ")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: ")
+        Log.i(TAG, " ***** onResume: *****")
         if (notRestart) {
             LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
         }
@@ -180,8 +176,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.action_backup_notes -> backupNotes()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun backupNotes() {
+        val intent = Intent()
+        intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES)
+        NoteBackupService.enqueueWork(this, intent)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -222,14 +225,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         dbOpenHelper.close()
-        Log.d(Companion.TAG, "onDestroy: ")
+        Log.i(TAG, "*** onDestroy: ***")
         super.onDestroy()
     }
 
     override fun onPause() {
         super.onPause()
         notRestart = false
-        Log.d(Companion.TAG, "onPause: ")
+        Log.i(TAG, " *** onPause: *** ")
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {

@@ -25,14 +25,14 @@ class NoteKeeperProviderContract private constructor() {
         const val PATH = "courses"
 
         // content://com.socap.notekeeper.provider/courses
-        val CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH)
+        val CONTENT_URI: Uri = Uri.withAppendedPath(AUTHORITY_URI, PATH)
     }
 
     object Notes : BaseColumns, NotesColumns, CoursesIdColumns, CoursesColumns {
         const val PATH = "notes"
-        val CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH)
+        val CONTENT_URI: Uri = Uri.withAppendedPath(AUTHORITY_URI, PATH)
         const val PATH_EXPANDED = "notes_expanded"
-        val CONTENT_EXPANDED_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH_EXPANDED)
+        val CONTENT_EXPANDED_URI: Uri = Uri.withAppendedPath(AUTHORITY_URI, PATH_EXPANDED)
     }
 
     companion object {
