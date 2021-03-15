@@ -18,7 +18,6 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
     private var coursePos: Int = POSITION_NOT_SET
     private var noteTitlePos: Int = POSITION_NOT_SET
     private var idPos: Int = POSITION_NOT_SET
-    val TAG = "com.socap.notekeeper.NoteRecyclerAdapter"
 
     init {
         populateColumnPositions()
@@ -38,8 +37,6 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
         this.cursor?.close()
         this.cursor = cursor
         populateColumnPositions()
-        Log.d(TAG, "changeCursor: value = $cursor")
-
         notifyDataSetChanged()
     }
 
@@ -49,7 +46,6 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder: value cursor = $cursor")
         cursor?.moveToPosition(position)
         val course = cursor?.getString(coursePos)
         val noteTitle = cursor?.getString(noteTitlePos)
@@ -76,5 +72,9 @@ class NoteRecyclerAdapter(private val context: Context, private var cursor: Curs
                 context.startActivity(intent)
             }
         }
+    }
+
+    companion object {
+        private val TAG = NoteRecyclerAdapter::class.java.name
     }
 }

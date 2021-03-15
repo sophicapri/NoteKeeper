@@ -6,6 +6,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +25,9 @@ import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
+import android.os.Looper
+import android.view.View
+import com.google.android.material.snackbar.Snackbar
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
@@ -244,10 +248,26 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         executor.execute {
             try {
                 noteUri = contentResolver.insert(Notes.CONTENT_URI, values)!!
+                Log.d(TAG, "createNewNote: noteUriValue = $noteUri")
+                doSomethingOnUi(noteUri)
             } catch (e: NullPointerException) {
                 Log.e(TAG, "createNewNote: ${e.message}", e.cause)
             }
         }
+    }
+
+    private fun doSomethingOnUi(uri: Uri) {
+        val uiThread = Handler(Looper.getMainLooper())
+        uiThread.post {
+            Log.d(TAG, "onPostExecute - thread: " + Thread.currentThread().id)
+            noteUri = uri
+            displaySnackbar(noteUri.toString())
+        }
+    }
+
+    private fun displaySnackbar(message: String) {
+        val view = findViewById<View>(R.id.spinner_courses)
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun saveOriginalNoteValues() {
@@ -351,6 +371,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         const val ID_NOT_SET = -1
         const val LOADER_NOTES = 0
         const val LOADER_COURSES = 1
-        private val TAG = NoteActivity::class.java.simpleName
+        private val TAG = NoteActivity::class.java.name
     }
 }

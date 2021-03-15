@@ -4,36 +4,15 @@ import android.content.*
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
+import android.util.Log
 import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
-import java.util.*
 
 
 class NoteKeeperProvider : ContentProvider() {
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
-
-    companion object {
-        private var uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
-        private const val COURSES = 0
-        private const val NOTES = 1
-        private const val NOTES_EXPANDED = 2
-        private const val NOTES_ROW = 3
-        private const val COURSES_ROW = 4
-        private const val NOTES_EXPANDED_ROW = 5
-        private const val MIME_VENDOR_TYPE = "vnd.${NoteKeeperProviderContract.AUTHORITY}."
-
-        init {
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH, COURSES)
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH, NOTES)
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED, NOTES_EXPANDED)
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, "${Notes.PATH}/#", NOTES_ROW)
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH + "/#", COURSES_ROW)
-            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED + "/#",
-                NOTES_EXPANDED_ROW)
-        }
-    }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         val rowId: Long
@@ -93,6 +72,7 @@ class NoteKeeperProvider : ContentProvider() {
         var rowUri: Uri? = null
         when (uriMatcher.match(uri)) {
             NOTES -> {
+                Log.d(TAG, "insert: note")
                 rowId = db.insert(NoteInfoEntry.TABLE_NAME, null, values)
                 // content://com.socap.notekeeper.provider/notes/1
                 rowUri = ContentUris.withAppendedId(Notes.CONTENT_URI, rowId)
@@ -216,5 +196,27 @@ class NoteKeeperProvider : ContentProvider() {
             }
         }
         return rows
+    }
+
+    companion object {
+        private val TAG = NoteKeeperProvider::class.java.name
+        private var uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
+        private const val COURSES = 0
+        private const val NOTES = 1
+        private const val NOTES_EXPANDED = 2
+        private const val NOTES_ROW = 3
+        private const val COURSES_ROW = 4
+        private const val NOTES_EXPANDED_ROW = 5
+        private const val MIME_VENDOR_TYPE = "vnd.${NoteKeeperProviderContract.AUTHORITY}."
+
+        init {
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH, COURSES)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH, NOTES)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED, NOTES_EXPANDED)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, "${Notes.PATH}/#", NOTES_ROW)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH + "/#", COURSES_ROW)
+            uriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED + "/#",
+                NOTES_EXPANDED_ROW)
+        }
     }
 }

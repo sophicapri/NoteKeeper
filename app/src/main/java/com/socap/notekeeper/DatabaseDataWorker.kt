@@ -1,8 +1,7 @@
 package com.socap.notekeeper
 
-import android.database.sqlite.SQLiteDatabase
 import android.content.ContentValues
-import com.socap.notekeeper.NoteKeeperDatabaseContract
+import android.database.sqlite.SQLiteDatabase
 
 /**
  * Created by Jim.

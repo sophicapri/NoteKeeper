@@ -2,7 +2,11 @@ package com.socap.notekeeper
 
 import android.content.Intent
 import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.StrictMode
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +28,7 @@ import com.socap.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry
 import com.socap.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityMainBinding
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     LoaderManager.LoaderCallbacks<Cursor> {
@@ -35,7 +40,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var courseLayoutManager: GridLayoutManager
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
     var notRestart = true
-    val TAG = "com.socap.notekeeper.MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +48,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        enableStrictMode()
+
         dbOpenHelper = NoteKeeperOpenHelper(this)
         binding.appBarMain.fab.setOnClickListener {
             startActivity(Intent(this, NoteActivity::class.java))
@@ -51,6 +57,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         configureDrawerLayout()
         initializeDisplayContent()
+    }
+
+    private fun enableStrictMode() {
+        if (BuildConfig.DEBUG) {
+            val policy = StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build()
+            StrictMode.setThreadPolicy(policy)
+        }
     }
 
     private fun configureDrawerLayout() {
@@ -75,8 +88,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
-        if (notRestart)
+        if (notRestart) {
             LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
+        }
+        notRestart = true
         updateNavHeader()
     }
 
@@ -85,24 +100,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val headerView = navigationView.getHeaderView(0)
         val textUserName = headerView.findViewById<TextView>(R.id.text_user_name)
         val textEmailAddress = headerView.findViewById<TextView>(R.id.text_email_address)
-
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val userName = sharedPref.getString(
-            getString(R.string.key_user_display_name),
-            getString(R.string.pref_default_display_name)
-        )
-        val emailAddress = sharedPref.getString(
-            getString(R.string.key_user_email_address),
-            getString(R.string.pref_default_email_address)
-        )
-
-        textUserName.text = userName
-        textEmailAddress.text = emailAddress
+        var userName: String?
+        var emailAddress: String?
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+            userName = sharedPref.getString(
+                getString(R.string.key_user_display_name),
+                getString(R.string.pref_default_display_name)
+            )
+            emailAddress = sharedPref.getString(
+                getString(R.string.key_user_email_address),
+                getString(R.string.pref_default_email_address)
+            )
+            val uiThread = Handler(Looper.getMainLooper())
+            uiThread.post {
+                textUserName.text = userName
+                textEmailAddress.text = emailAddress
+            }
+        }
     }
 
     private fun initializeDisplayContent() {
-        DataManager.loadFromDatabase(dbOpenHelper)
-
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            DataManager.loadFromDatabase(dbOpenHelper)
+        }
         recyclerItems = binding.appBarMain.contentMain.listItems
         notesLayoutManager = LinearLayoutManager(this)
         courseLayoutManager =
@@ -184,14 +207,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         dbOpenHelper.close()
-        Log.d(TAG, "onDestroy: ")
+        Log.d(Companion.TAG, "onDestroy: ")
         super.onDestroy()
     }
 
     override fun onPause() {
         super.onPause()
         notRestart = false
-        Log.d(TAG, "onPause: ")
+        Log.d(Companion.TAG, "onPause: ")
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
@@ -204,9 +227,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
             val noteOrderBy = "${Notes.COLUMN_COURSE_TITLE},${Notes.COLUMN_NOTE_TITLE}"
 
-            loader =
-                CursorLoader(this, Notes.CONTENT_EXPANDED_URI, noteColumns,
-                    null, null, noteOrderBy)
+            loader = CursorLoader(
+                    this, Notes.CONTENT_EXPANDED_URI, noteColumns,
+                    null, null, noteOrderBy
+                )
         }
         return loader
     }
@@ -224,5 +248,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         const val LOADER_NOTES = 3
+        private val TAG = MainActivity::class.java.name
     }
 }
