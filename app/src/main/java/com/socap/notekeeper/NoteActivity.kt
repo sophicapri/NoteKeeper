@@ -259,7 +259,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                 simulateLongRunningWork() // simulate slow work with data
                 uiThread.post { progressBar.progress = 3 }
                 uiThread.post { displaySnackbar(noteUri.toString(), progressBar)}
-
             } catch (e: NullPointerException) {
                 Log.e(TAG, "createNewNote: ${e.message}", e.cause)
             }

@@ -8,8 +8,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -78,6 +80,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
     }
 
+    /**
+     * Using #notRestart flag Because onRestart() gets called before onResume() and loaderManager
+     * crashes if not loaded properly
+     */
     override fun onRestart() {
         super.onRestart()
         LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
@@ -93,6 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         notRestart = true
         updateNavHeader()
+        openDrawer()
     }
 
     private fun updateNavHeader() {
@@ -119,6 +126,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 textEmailAddress.text = emailAddress
             }
         }
+    }
+
+    private fun openDrawer() {
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({
+            val drawer = binding.drawerLayout
+            drawer.openDrawer(Gravity.START)
+        }, 1000)
     }
 
     private fun initializeDisplayContent() {
@@ -228,9 +243,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val noteOrderBy = "${Notes.COLUMN_COURSE_TITLE},${Notes.COLUMN_NOTE_TITLE}"
 
             loader = CursorLoader(
-                    this, Notes.CONTENT_EXPANDED_URI, noteColumns,
-                    null, null, noteOrderBy
-                )
+                this, Notes.CONTENT_EXPANDED_URI, noteColumns,
+                null, null, noteOrderBy
+            )
         }
         return loader
     }
