@@ -27,7 +27,9 @@ import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
 import android.os.Looper
 import android.view.View
+import android.widget.ProgressBar
 import com.google.android.material.snackbar.Snackbar
+import java.lang.Exception
 
 
 class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
@@ -245,29 +247,36 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         values.put(Notes.COLUMN_NOTE_TEXT, "")
 
         val executor = Executors.newSingleThreadExecutor()
+        val uiThread = Handler(Looper.getMainLooper())
+        val progressBar = binding.contentNote.progressBar
+        progressBar.visibility = View.VISIBLE
+        progressBar.progress = 1
         executor.execute {
             try {
                 noteUri = contentResolver.insert(Notes.CONTENT_URI, values)!!
-                Log.d(TAG, "createNewNote: noteUriValue = $noteUri")
-                doSomethingOnUi(noteUri)
+                simulateLongRunningWork() // simulate slow database work
+                uiThread.post { progressBar.progress = 2 }
+                simulateLongRunningWork() // simulate slow work with data
+                uiThread.post { progressBar.progress = 3 }
+                uiThread.post { displaySnackbar(noteUri.toString(), progressBar)}
+
             } catch (e: NullPointerException) {
                 Log.e(TAG, "createNewNote: ${e.message}", e.cause)
             }
         }
     }
 
-    private fun doSomethingOnUi(uri: Uri) {
-        val uiThread = Handler(Looper.getMainLooper())
-        uiThread.post {
-            Log.d(TAG, "onPostExecute - thread: " + Thread.currentThread().id)
-            noteUri = uri
-            displaySnackbar(noteUri.toString())
+    private fun simulateLongRunningWork() {
+        try {
+            Thread.sleep(2000)
+        } catch (ex: Exception) {
         }
     }
 
-    private fun displaySnackbar(message: String) {
+    private fun displaySnackbar(message: String, progressBar: ProgressBar) {
         val view = findViewById<View>(R.id.spinner_courses)
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+        progressBar.visibility = View.GONE
     }
 
     private fun saveOriginalNoteValues() {

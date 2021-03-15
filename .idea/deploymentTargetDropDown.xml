@@ -3,15 +3,15 @@
   <component name="deploymentTargetDropDown">
     <targetSelectedWithDropDown>
       <Target>
-        <type value="RUNNING_DEVICE_TARGET" />
+        <type value="QUICK_BOOT_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="9889db314733424f31" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\sophi\.android\avd\Pixel_3a_API_30_2.avd" />
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2021-03-14T15:16:58.986011400Z" />
+    <timeTargetWasSelectedWithDropDown value="2021-03-15T14:04:31.838879300Z" />
   </component>
 </project>

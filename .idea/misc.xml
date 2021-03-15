@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/sophi/AppData/Local/Android/Sdk/platforms/android-30/data/res/layout/simple_spinner_item.xml" value="0.22239583333333332" />
+        <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.14791666666666667" />
         <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/activity_main.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/app_bar_main.xml" value="0.22239583333333332" />
+        <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/content_note.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/content_note_list.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/layout/item_note_list.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/sophi/Documents/Android Learning/Pluralsight/AndroidBasics/NoteKeeper/app/src/main/res/menu/menu_note.xml" value="0.264" />
