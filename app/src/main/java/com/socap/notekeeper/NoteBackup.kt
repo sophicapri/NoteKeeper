@@ -1,5 +1,6 @@
 package com.socap.notekeeper
 
+import android.content.ContentResolver
 import android.content.Context
 import android.util.Log
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
@@ -8,7 +9,7 @@ object NoteBackup {
     const val ALL_COURSES = "ALL_COURSES"
     private val TAG = NoteBackup::class.java.name
 
-    fun doBackup(context: Context, backupCourseId: String) {
+    fun doBackup(contentResolver: ContentResolver, backupCourseId: String) {
         val columns = arrayOf(
             Notes.COLUMN_COURSE_ID,
             Notes.COLUMN_NOTE_TITLE,
@@ -20,7 +21,7 @@ object NoteBackup {
             selection = Notes.COLUMN_COURSE_ID + " = ?"
             selectionArgs = arrayOf(backupCourseId)
         }
-        val cursor = context.contentResolver.query(
+        val cursor = contentResolver.query(
             Notes.CONTENT_URI,
             columns,
             selection,

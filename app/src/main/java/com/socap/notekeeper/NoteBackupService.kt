@@ -16,20 +16,11 @@ class NoteBackupService : JobIntentService() {
         Log.i(TAG, "Executing work: $intent")
         val backupCourseId = intent.getStringExtra(EXTRA_COURSE_ID)
         if (backupCourseId != null)
-            NoteBackup.doBackup(this, backupCourseId)
+            NoteBackup.doBackup(contentResolver, backupCourseId)
         else
             Log.e(TAG, "onHandleWork: Extra not found")
-        Log.i(TAG, "onHandleWork: Executing: $backupCourseId")
         Log.i(TAG, "Completed service @ " + SystemClock.elapsedRealtime())
     }
-
-    /*override fun onDestroy() {
-        super.onDestroy()
-        val notificationHelper = NotificationHelper(this)
-        val nb: NotificationCompat.Builder = notificationHelper
-            .getChannelNotification("Backup finished", "All notes have been backed up", 3)
-        notificationHelper.manager.notify(NotificationHelper.NOTIFICATION_ID, nb.build())
-    }*/
 
     companion object {
         const val EXTRA_COURSE_ID = "com.socap.notekeeper.extra.COURSE_ID"

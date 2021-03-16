@@ -73,4 +73,5 @@
     <string name="key_user_favorite_social">key_user_favorite_social</string>
     <string name="set_reminder">Set reminder</string>
     <string name="backup_notes">Backup notes</string>
+    <string name="upload_notes">Upload notes</string>
 </resources>

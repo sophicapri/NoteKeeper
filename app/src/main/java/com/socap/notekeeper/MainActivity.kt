@@ -1,12 +1,11 @@
 package com.socap.notekeeper
 
-import android.app.PendingIntent
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.Intent
 import android.database.Cursor
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var notesLayoutManager: LinearLayoutManager
     private lateinit var courseLayoutManager: GridLayoutManager
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
-    var notRestart = true
+    var isNotRestarted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,19 +83,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onRestart() {
         super.onRestart()
         LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
-        notRestart = false
+        isNotRestarted = false
         Log.i(TAG, "*** onRestart: *** ")
     }
 
     override fun onResume() {
         super.onResume()
         Log.i(TAG, " ***** onResume: *****")
-        if (notRestart) {
+        if (isNotRestarted) {
             LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
         }
-        notRestart = true
+        isNotRestarted = true
         updateNavHeader()
-        openDrawer()
+        //openDrawer()
     }
 
     private fun updateNavHeader() {
@@ -178,6 +177,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.action_backup_notes -> backupNotes()
+            R.id.action_upload_notes -> scheduleNoteUpload()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -186,6 +186,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val intent = Intent()
         intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES)
         NoteBackupService.enqueueWork(this, intent)
+    }
+
+    private fun scheduleNoteUpload() {
+        val extras = PersistableBundle()
+        extras.putString(NoteUploaderJobService.EXTRA_DATA_URI, Notes.CONTENT_URI.toString())
+        val componentName = ComponentName(this, NoteUploaderJobService::class.java)
+        val jobInfo = JobInfo.Builder(NOTE_UPLOADER_JOB_ID, componentName)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setExtras(extras)
+            .build()
+        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        jobScheduler.schedule(jobInfo)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -232,7 +244,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onPause() {
         super.onPause()
-        notRestart = false
+        isNotRestarted = false
         Log.i(TAG, " *** onPause: *** ")
     }
 
@@ -266,6 +278,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
+        const val NOTE_UPLOADER_JOB_ID: Int = 2000
         const val LOADER_NOTES = 3
         private val TAG = MainActivity::class.java.name
     }
