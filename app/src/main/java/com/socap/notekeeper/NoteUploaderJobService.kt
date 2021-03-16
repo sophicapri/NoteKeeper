@@ -3,13 +3,15 @@ package com.socap.notekeeper
 import android.app.job.JobService
 import android.app.job.JobParameters
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.util.concurrent.Executors
 
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class NoteUploaderJobService : JobService() {
-    private lateinit var noteUploader: NoteUploader
+    private val noteUploader: NoteUploader by lazy { NoteUploader(contentResolver)}
 
     override fun onStartJob(params: JobParameters): Boolean {
-        noteUploader = NoteUploader(contentResolver)
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             val stringDataUri = params.extras.getString(EXTRA_DATA_URI)

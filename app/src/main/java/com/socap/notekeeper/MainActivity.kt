@@ -30,7 +30,7 @@ import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     LoaderManager.LoaderCallbacks<Cursor> {
-    private lateinit var binding: ActivityMainBinding
+    private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var noteRecyclerAdapter: NoteRecyclerAdapter
     private lateinit var courseRecyclerAdapter: CourseRecyclerAdapter
     private lateinit var recyclerItems: RecyclerView
@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
