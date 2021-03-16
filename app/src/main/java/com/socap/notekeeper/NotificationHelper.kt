@@ -1,6 +1,7 @@
 package com.socap.notekeeper
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,6 +10,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.os.Build.VERSION_CODES
+import android.util.Log
 import androidx.core.app.NotificationCompat
 
 class NotificationHelper(private val context: Context) : ContextWrapper(context) {
@@ -21,14 +25,13 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
         createChannel()
     }
 
-    //@TargetApi(Build.VERSION_CODES.O)
+    @TargetApi(Build.VERSION_CODES.O)
     private fun createChannel() {
-        val channel =
-            NotificationChannel(CHANNEL_ID, REMINDER, NotificationManager.IMPORTANCE_HIGH)
+        val channel = NotificationChannel(CHANNEL_ID, REMINDER, NotificationManager.IMPORTANCE_HIGH)
         manager.createNotificationChannel(channel)
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
+    @SuppressLint("InlinedApi")
     fun getChannelNotification(
         noteTitle: String,
         noteText: String,
@@ -43,7 +46,6 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
         // This image is used as the notification's large icon (thumbnail).
         val picture = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
 
-
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("Title review note")
             .setDefaults(Notification.DEFAULT_ALL)
@@ -54,7 +56,7 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
             // notification drawer on devices running Android 3.0 or later.
             .setLargeIcon(picture)
             // Set ticker text (preview) information for this notification.
-            //.setTicker("Review note")
+            .setTicker("Review note")
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(noteText)
@@ -66,7 +68,9 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context, 0, noteActivityIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    if (Build.VERSION.SDK_INT > VERSION_CODES.R || Build.VERSION.CODENAME == "S")
+                        PendingIntent.FLAG_MUTABLE
+                    else PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
             .addAction(
@@ -94,5 +98,6 @@ class NotificationHelper(private val context: Context) : ContextWrapper(context)
         const val NOTIFICATION_ID: Int = 1
         const val CHANNEL_ID = "channelID"
         const val REMINDER = "Reminder"
+        private val TAG = NotificationHelper::class.java.name
     }
 }

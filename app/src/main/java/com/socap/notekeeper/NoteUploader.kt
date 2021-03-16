@@ -36,9 +36,9 @@ class NoteUploader(private val contentResolver: ContentResolver) {
             }
         }
 
-        if (isCanceled)
+        if (isCanceled) {
             Log.i(TAG, ">>>*** UPLOAD !!CANCELED!! - $dataUri ***<<<")
-        else
+        } else
             Log.i(TAG, ">>>*** UPLOAD COMPLETE - $dataUri ***<<<")
         cursor.close()
     }

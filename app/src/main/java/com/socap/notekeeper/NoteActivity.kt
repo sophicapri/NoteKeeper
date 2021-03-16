@@ -1,12 +1,14 @@
 package com.socap.notekeeper
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
+import android.os.*
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -25,7 +27,6 @@ import com.socap.notekeeper.NoteKeeperProviderContract.Courses
 import com.socap.notekeeper.NoteKeeperProviderContract.Notes
 import com.socap.notekeeper.databinding.ActivityNoteBinding
 import java.util.concurrent.Executors
-import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import com.google.android.material.snackbar.Snackbar
@@ -188,15 +189,29 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         return super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("InlinedApi")
     private fun showReminderNotification() {
         val noteTitle: String = textNoteTitle.text.toString()
         val noteText: String = textNoteText.text.toString()
         // val noteId = ContentUris.parseId(noteUri).toInt()
 
-        val notificationHelper = NotificationHelper(this)
-        val nb: NotificationCompat.Builder = notificationHelper
-            .getChannelNotification(noteTitle, noteText, noteId)
-        notificationHelper.manager.notify(NotificationHelper.NOTIFICATION_ID, nb.build())
+        val intent = Intent(this, NoteReminderReceiver::class.java)
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TITLE, noteTitle)
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TEXT, noteText)
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_ID, noteId)
+
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R || Build.VERSION.CODENAME == "S")
+                PendingIntent.FLAG_MUTABLE
+            else PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val currentTimeInMilliseconds = SystemClock.elapsedRealtime()
+        val ONE_HOUR = (60 * 60 * 1000).toLong()
+        val TEN_SECONDS = (10 * 1000).toLong()
+        val alarmTime = currentTimeInMilliseconds + TEN_SECONDS
+        alarmManager[AlarmManager.ELAPSED_REALTIME, alarmTime] = pendingIntent
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -258,7 +273,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                 uiThread.post { progressBar.progress = 2 }
                 simulateLongRunningWork() // simulate slow work with data
                 uiThread.post { progressBar.progress = 3 }
-                uiThread.post { displaySnackbar(noteUri.toString(), progressBar)}
+                uiThread.post { displaySnackbar(noteUri.toString(), progressBar) }
             } catch (e: NullPointerException) {
                 Log.e(TAG, "createNewNote: ${e.message}", e.cause)
             }
