@@ -16,7 +16,6 @@ import android.widget.EditText
 import android.widget.SimpleCursorAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
@@ -311,6 +310,8 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         spinnerCourses.setSelection(courseIndex)
         textNoteTitle.setText(noteTitle)
         textNoteText.setText(noteText)
+
+        sendBroadcast(CourseEventBroadcastHelper.getEventBroadcastIntent(courseId, "Editing Note"))
     }
 
     private fun getIndexOfCourseId(courseId: String): Int {

@@ -19,8 +19,8 @@ class NoteReminderReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        val EXTRA_NOTE_TITLE = "com.jwhh.jim.notekeeper.extra.NOTE_TITLE"
-        val EXTRA_NOTE_TEXT = "com.jwhh.jim.notekeeper.extra.NOTE_TEXT"
-        val EXTRA_NOTE_ID = "com.jwhh.jim.notekeeper.extra.NOTE_ID"
+        const val EXTRA_NOTE_TITLE = "com.socap.notekeeper.extra.NOTE_TITLE"
+        const val EXTRA_NOTE_TEXT = "com.socap.notekeeper.extra.NOTE_TEXT"
+        const val EXTRA_NOTE_ID = "com.socap.notekeeper.extra.NOTE_ID"
     }
 }
