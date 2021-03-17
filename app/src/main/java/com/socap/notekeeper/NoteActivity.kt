@@ -40,7 +40,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private lateinit var textNoteTitle: EditText
     private lateinit var textNoteText: EditText
     private var noteId = 0
-    private var isCancelling = false
     private lateinit var viewModel: NoteActivityViewModel
     private lateinit var dbOpenHelper: NoteKeeperOpenHelper
     private lateinit var noteCursor: Cursor
@@ -51,6 +50,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private var coursesQueryFinished = false
     private var noteQueryFinished = false
     private lateinit var noteUri: Uri
+    private var isActivityRecreated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,13 +66,14 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         )
 
         viewModel = viewModelProvider.get(NoteActivityViewModel::class.java)
-
-        Log.i(TAG, "onCreate: viewmodel value = ${viewModel.isNewlyCreated}")
         if (viewModel.isNewlyCreated && savedInstanceState != null) {
             viewModel.restoreState(savedInstanceState)
             noteUri = Uri.parse(viewModel.originalNoteUri)
         }
+
         viewModel.isNewlyCreated = false
+
+        if (savedInstanceState != null) isActivityRecreated = true
 
         adapterCourses =
             SimpleCursorAdapter(
@@ -84,14 +85,14 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         spinnerCourses = binding.contentNote.spinnerCourses
         spinnerCourses.adapter = adapterCourses
 
-        LoaderManager.getInstance(this).initLoader(LOADER_COURSES, null, this)
+        LoaderManager.getInstance(this).restartLoader(LOADER_COURSES, null, this)
 
         textNoteTitle = binding.contentNote.textNoteTitle
         textNoteText = binding.contentNote.textNoteText
 
         readDisplayStateValues()
         if (!isNewNote)
-            LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
+            LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
     }
 
     override fun onResume() {
@@ -157,8 +158,10 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun displayNoteWhenQueriesFinished() {
         if (noteQueryFinished && coursesQueryFinished) {
-            saveOriginalNoteValues()
-            displayNote()
+            if (!isActivityRecreated) {
+                displayNote()
+                saveOriginalNoteValues()
+            }
         }
     }
 
@@ -187,14 +190,19 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         // as you specify a parent activity in AndroidManifest.xml.
         when (item.itemId) {
             R.id.action_send_email -> sendEmail()
-            R.id.action_cancel -> {
-                isCancelling = true
-                finish()
-            }
-            R.id.action_next -> moveNext()
+            R.id.action_cancel -> cancelNoteCreation()
+          //R.id.action_next -> moveNext()
             R.id.action_set_reminder -> showReminderNotification()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun cancelNoteCreation() {
+        if (isNewNote)
+            deleteNoteFromDatabase()
+        else
+            storePreviousNoteValues()
+        finish()
     }
 
     @SuppressLint("InlinedApi")
@@ -230,16 +238,14 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         return super.onPrepareOptionsMenu(menu)
     }
 
-    private fun moveNext() {
+    /*private fun moveNext() {
         saveNote()
-
         ++noteId
         note = DataManager.instance.notes[noteId]
-
         saveOriginalNoteValues()
         displayNote()
         invalidateOptionsMenu()
-    }
+    }*/
 
     private fun sendEmail() {
         //val course = spinnerCourses.selectedItem as CourseInfo
@@ -344,15 +350,13 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onPause() {
         super.onPause()
-        if (isCancelling) {
-            Log.i(TAG, "Cancelling note at position $noteId")
-            if (isNewNote)
-                deleteNoteFromDatabase()
-            else
-                storePreviousNoteValues()
-        } else
-            saveNote()
         Log.d(TAG, "onPause")
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Log.i(TAG, "onBackPressed: ")
+        saveNote()
     }
 
     private fun deleteNoteFromDatabase() {
