@@ -1,77 +1,73 @@
 <resources>
     <string name="app_name">NoteKeeper</string>
-    <string name="action_settings">Settings</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="action_settings" translatable="false">Settings</string>
+    <string name="next" translatable="false">Next</string>
+    <string name="previous" translatable="false">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_note_list">NoteListActivity</string>
-    <string name="title_activity_note">Edit Note</string>
-    <string name="new_note">New note</string>
-    <string name="send_as_email">Send as email</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="title_activity_note_list" translatable="false">NoteListActivity</string>
+    <string name="new_note" translatable="false">New note</string>
+    <string name="send_as_email" translatable="false">Send as email</string>
+    <string name="title_activity_main" translatable="false">MainActivity</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="open_navigation_drawer">Open navigation drawer</string>
-    <string name="close_navigation_drawer">Closer navigation drawer</string>
-    <string name="notes">Notes</string>
-    <string name="courses">Courses</string>
-    <string name="communicate">Communicate</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
-    <string name="icon_for_note">Icon for note</string>
-    <string name="icon_for_course">Icon for course</string>
+    <string name="menu_home" translatable="false">Home</string>
+    <string name="menu_gallery" translatable="false">Gallery</string>
+    <string name="menu_slideshow" translatable="false">Slideshow</string>
+    <string name="open_navigation_drawer" translatable="false">Open navigation drawer</string>
+    <string name="close_navigation_drawer" translatable="false">Closer navigation drawer</string>
+    <string name="notes" translatable="false">Notes</string>
+    <string name="courses" translatable="false">Courses</string>
+    <string name="communicate" translatable="false">Communicate</string>
+    <string name="menu_share" translatable="false">Share</string>
+    <string name="menu_send" translatable="false">Send</string>
+    <string name="icon_for_note" translatable="false">Icon for note</string>
+    <string name="icon_for_course" translatable="false">Icon for course</string>
     <string name="note_title_hint">Note title</string>
     <string name="note_text_hint">Note text</string>
-    <string name="nav_share_message">Share</string>
-    <string name="nav_send_message">Send</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="nav_share_message" translatable="false">Share</string>
+    <string name="nav_send_message" translatable="false">Send</string>
+    <string name="title_activity_settings" translatable="false">Settings</string>
 
     <!-- Strings related to Settings -->
     <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contactbased on your message history </string>
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">Your Name</string>
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string name="pref_header_general" translatable="false">General</string>
+    <string name="pref_title_social_recommendations" translatable="false">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations" translatable="false">Recommendations for people to contactbased on your message history </string>
+    <string name="pref_title_display_name" translatable="false">Display name</string>
+    <string name="pref_default_display_name" translatable="false">Your Name</string>
+    <string name="pref_title_add_friends_to_messages" translatable="false">Add friends to messages</string>
 
     <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string name="pref_title_system_sync_settings">System sync settings</string>
+    <string name="pref_header_data_sync" translatable="false">Data &amp; sync</string>
+    <string name="pref_title_sync_frequency" translatable="false">Sync frequency</string>
+    <string name="pref_title_system_sync_settings" translatable="false">System sync settings</string>
 
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_email_address">Email address</string>
-    <string name="pref_default_email_address">yourname@yourhost.com</string>
-    <string name="pref_title_favorite_social">Favorite social network</string>
-    <string name="pref_default_favorite_social">http://plus.google.com</string>
+    <string name="pref_header_notifications" translatable="false">Notifications</string>
+    <string name="pref_title_new_message_notifications" translatable="false">New message notifications</string>
+    <string name="pref_title_ringtone" translatable="false">Ringtone</string>
+    <string name="pref_ringtone_silent" translatable="false">Silent</string>
+    <string name="pref_title_vibrate" translatable="false">Vibrate</string>
+    <string name="pref_title_email_address" translatable="false">Email address</string>
+    <string name="pref_default_email_address" translatable="false">yourname@yourhost.com</string>
+    <string name="pref_title_favorite_social" translatable="false">Favorite social network</string>
+    <string name="pref_default_favorite_social" translatable="false">http://plus.google.com</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    <string name="sync_title" translatable="false">Sync email periodically</string>
+    <string name="attachment_title" translatable="false">Download incoming attachments</string>
+    <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails
     </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="title_activity_settings2">SettingsActivity2</string>
-    <string name="title_activity_settings3">SettingsActivity3</string>
-    <string name="key_user_display_name">key_user_display_name</string>
-    <string name="key_user_email_address">key_user_email_address</string>
-    <string name="key_user_favorite_social">key_user_favorite_social</string>
-    <string name="set_reminder">Set reminder</string>
-    <string name="backup_notes">Backup notes</string>
-    <string name="upload_notes">Upload notes</string>
+    <string name="attachment_summary_off" translatable="false">Only download attachments when manually requested</string>
+    <string name="key_user_display_name" translatable="false">key_user_display_name</string>
+    <string name="key_user_email_address" translatable="false">key_user_email_address</string>
+    <string name="key_user_favorite_social" translatable="false">key_user_favorite_social</string>
+    <string name="set_reminder" translatable="false">Set reminder</string>
+    <string name="backup_notes" translatable="false">Backup notes</string>
+    <string name="upload_notes" translatable="false">Upload notes</string>
+    <string name="title_activity_note">Edit Note</string>
 </resources>

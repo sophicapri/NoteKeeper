@@ -52,7 +52,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private var noteQueryFinished = false
     private lateinit var noteUri: Uri
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNoteBinding.inflate(layoutInflater)
@@ -68,9 +67,11 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
         viewModel = viewModelProvider.get(NoteActivityViewModel::class.java)
 
-        if (viewModel.isNewlyCreated && savedInstanceState != null)
+        Log.i(TAG, "onCreate: viewmodel value = ${viewModel.isNewlyCreated}")
+        if (viewModel.isNewlyCreated && savedInstanceState != null) {
             viewModel.restoreState(savedInstanceState)
-
+            noteUri = Uri.parse(viewModel.originalNoteUri)
+        }
         viewModel.isNewlyCreated = false
 
         adapterCourses =
@@ -89,12 +90,17 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         textNoteText = binding.contentNote.textNoteText
 
         readDisplayStateValues()
-        if (!isNewNote) {
+        if (!isNewNote)
             LoaderManager.getInstance(this).initLoader(LOADER_NOTES, null, this)
-        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, " ***** onResume: *****")
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+        Log.i(TAG, "onCreateLoader: ")
         var loader: Loader<Cursor> = CursorLoader(this)
         if (id == LOADER_NOTES)
             loader = createLoaderNote()
@@ -121,11 +127,13 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             Notes.COLUMN_NOTE_TITLE,
             Notes.COLUMN_NOTE_TEXT
         )
+        Log.i(TAG, "createLoaderNote: ")
         noteUri = ContentUris.withAppendedId(Notes.CONTENT_URI, noteId.toLong())
         return CursorLoader(this, noteUri, noteColumns, null, null, null)
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor) {
+        Log.i(TAG, "onLoadFinished: ")
         if (loader.id == LOADER_NOTES)
             loadFinishedNote(data)
         else if (loader.id == LOADER_COURSES) {
@@ -149,8 +157,8 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun displayNoteWhenQueriesFinished() {
         if (noteQueryFinished && coursesQueryFinished) {
-            displayNote()
             saveOriginalNoteValues()
+            displayNote()
         }
     }
 
@@ -163,6 +171,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString(NoteActivityViewModel.ORIGINAL_NOTE_URI, noteUri.toString())
         viewModel.saveState(outState)
     }
 
@@ -199,7 +208,8 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TEXT, noteText)
         intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_ID, noteId)
 
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, 0, intent,
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R || Build.VERSION.CODENAME == "S")
                 PendingIntent.FLAG_MUTABLE
             else PendingIntent.FLAG_UPDATE_CURRENT
@@ -208,7 +218,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val currentTimeInMilliseconds = SystemClock.elapsedRealtime()
         val ONE_HOUR = (60 * 60 * 1000).toLong()
-        val TEN_SECONDS = (10 * 1000).toLong()
+        val TEN_SECONDS = (10 * 1000)
         val alarmTime = currentTimeInMilliseconds + TEN_SECONDS
         alarmManager[AlarmManager.ELAPSED_REALTIME, alarmTime] = pendingIntent
     }
@@ -293,12 +303,13 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     private fun saveOriginalNoteValues() {
+        Log.i(TAG, "saveOriginalNoteValues: ")
         if (isNewNote)
             return
         viewModel.originalNoteCourseId = note.course.courseId
         viewModel.originalNoteTitle = note.title
         viewModel.originalNoteText = note.text
-
+        viewModel.originalNoteUri = noteUri.toString()
     }
 
     private fun displayNote() {
