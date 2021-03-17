@@ -70,7 +70,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             viewModel.restoreState(savedInstanceState)
             noteUri = Uri.parse(viewModel.originalNoteUri)
         }
-
         viewModel.isNewlyCreated = false
 
         if (savedInstanceState != null) isActivityRecreated = true
@@ -93,11 +92,6 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         readDisplayStateValues()
         if (!isNewNote)
             LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.i(TAG, " ***** onResume: *****")
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
