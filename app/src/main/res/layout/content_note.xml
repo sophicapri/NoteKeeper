@@ -68,8 +68,6 @@
         id="@+id/view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
         android:layout_marginTop="8dp"
         android:padding="5dp"
         app:layout_constraintLeft_toLeftOf="@+id/text_note_text"
