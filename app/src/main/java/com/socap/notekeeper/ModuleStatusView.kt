@@ -24,6 +24,7 @@ class ModuleStatusView : View {
     private lateinit var paintOutline: Paint
     private lateinit var paintFill: Paint
     private val radius by lazy { (shapeSize - outlineWidth) / 2 }
+    private var shape = SHAPE_CIRCLE
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -51,10 +52,11 @@ class ModuleStatusView : View {
 
         spacing = 30f
         shapeSize = 144f
-        outlineWidth = 6f
+        outlineWidth = a.getDimension(R.styleable.ModuleStatusView_outlineWidth, 6f)
+        fillColor = a.getColor(R.styleable.ModuleStatusView_fillColor, fillColor)
         outlineColor = a.getColor(R.styleable.ModuleStatusView_outlineColor, Color.BLACK)
-        fillColor = a.getColor(R.styleable.ModuleStatusView_fillColor, Color.RED)
-
+        shape = a.getInt(R.styleable.ModuleStatusView_shape, SHAPE_CIRCLE)
+        
         a.recycle()
 
         paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -72,7 +74,7 @@ class ModuleStatusView : View {
         val middle = EDIT_MODE_MODULE_COUNT / 2
         for (i in 0 until middle) exampleModuleValues[i] = true
         moduleStatus = exampleModuleValues
-        //fillColor = Color.RED
+        fillColor = Color.RED
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -120,13 +122,29 @@ class ModuleStatusView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         moduleRectangles.forEachIndexed { moduleIndex, _ ->
-            val x: Float = moduleRectangles[moduleIndex].centerX().toFloat()
-            val y: Float = moduleRectangles[moduleIndex].centerY().toFloat()
+            if (shape == SHAPE_CIRCLE) {
+                val x: Float = moduleRectangles[moduleIndex].centerX().toFloat()
+                val y: Float = moduleRectangles[moduleIndex].centerY().toFloat()
 
-            if (moduleStatus[moduleIndex])
-                canvas.drawCircle(x, y, radius, paintFill)
-            canvas.drawCircle(x, y, radius, paintOutline)
+                if (moduleStatus[moduleIndex])
+                    canvas.drawCircle(x, y, radius, paintFill)
+                canvas.drawCircle(x, y, radius, paintOutline)
+            } else{
+                drawSquare(canvas, moduleIndex)
+            }
         }
+    }
+
+    private fun drawSquare(canvas: Canvas, moduleIndex: Int) {
+        val moduleRectangle: Rect = moduleRectangles.get(moduleIndex)
+        if (moduleStatus.get(moduleIndex)) canvas.drawRect(moduleRectangle, paintFill)
+        canvas.drawRect(
+            moduleRectangle.left + outlineWidth / 2,
+            moduleRectangle.top + outlineWidth / 2,
+            moduleRectangle.right - outlineWidth / 2,
+            moduleRectangle.bottom - outlineWidth / 2,
+            paintOutline
+        )
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -164,5 +182,6 @@ class ModuleStatusView : View {
     companion object {
         private const val EDIT_MODE_MODULE_COUNT = 7
         private const val INVALID_INDEX = -1
+        private const val SHAPE_CIRCLE = 0
     }
 }
