@@ -51,6 +51,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     private var noteQueryFinished = false
     private lateinit var noteUri: Uri
     private var isActivityRecreated = false
+    private lateinit var viewModuleStatus: ModuleStatusView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +61,7 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         setSupportActionBar(binding.toolbar)
 
         dbOpenHelper = NoteKeeperOpenHelper(this)
-        val viewModelProvider = ViewModelProvider(
-            viewModelStore,
+        val viewModelProvider = ViewModelProvider(viewModelStore,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )
 
@@ -92,6 +92,17 @@ class NoteActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         readDisplayStateValues()
         if (!isNewNote)
             LoaderManager.getInstance(this).restartLoader(LOADER_NOTES, null, this)
+        viewModuleStatus = findViewById(R.id.module_status)
+        loadModuleStatusValues()
+    }
+
+    private fun loadModuleStatusValues() {
+        // In real life we'd lookup the selected course's module statuses from the content provider
+        val totalNumberOfModules = 11
+        val completedNumberOfModules = 7
+        val moduleStatus = BooleanArray(totalNumberOfModules)
+        for (moduleIndex in 0 until completedNumberOfModules) moduleStatus[moduleIndex] = true
+        viewModuleStatus.moduleStatus = moduleStatus
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {

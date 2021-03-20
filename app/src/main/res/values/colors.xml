@@ -11,4 +11,8 @@
     <color name="grey_500">#333333</color>
     <color name="grey_700">#222222</color>
     <color name="pluralsight_orange">#F05128</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
 </resources>

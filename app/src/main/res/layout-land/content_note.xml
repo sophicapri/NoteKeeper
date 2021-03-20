@@ -61,6 +61,20 @@
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <view
+        android:id="@+id/module_status"
+        class="com.socap.notekeeper.ModuleStatusView"
+        id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="8dp"
+        android:padding="5dp"
+        app:layout_constraintLeft_toLeftOf="@+id/text_note_text"
+        app:layout_constraintRight_toRightOf="@+id/text_note_text"
+        app:layout_constraintTop_toBottomOf="@+id/text_note_text"/>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"

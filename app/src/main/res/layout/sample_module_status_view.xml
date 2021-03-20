@@ -1,0 +1,27 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!--
+    <com.socap.notekeeper.ModuleStatusView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="40dp"
+        app:exampleDimension="24sp"/>
+-->
+
+    <view
+        android:id="@+id/module_status"
+        class="com.socap.notekeeper.ModuleStatusView"
+        id="@+id/view"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        app:exampleDimension="24sp"/>
+</FrameLayout>

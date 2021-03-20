@@ -14,8 +14,8 @@
         <item name="srcCompat">@drawable/ic_baseline_add_circle_24</item>
     </style>
 
- <!--   <style name="WeirdEditText" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">@android:color/holo_green_light</item>
-        <item name="android:textColorHint">@android:color/holo_red_dark</item>
-    </style>-->
+    <style name="Widget.Theme.NoteKeeper.MyView" parent="">
+        <item name="android:background">@color/gray_400</item>
+        <item name="exampleColor">@color/light_blue_400</item>
+    </style>
 </resources>

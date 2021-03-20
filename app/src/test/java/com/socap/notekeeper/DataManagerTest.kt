@@ -30,7 +30,7 @@ class DataManagerTest {
 
         val noteIndex = dm.createNewNote()
         val newNote = dm.notes[noteIndex]
-        newNote.course = course
+        newNote.course = course!!
         newNote.title = noteTitle
         newNote.text = noteText
 
@@ -49,7 +49,7 @@ class DataManagerTest {
 
         val noteIndex1 = dm.createNewNote()
         val newNote1 = dm.notes[noteIndex1]
-        newNote1.course = course
+        newNote1.course = course!!
         newNote1.title = noteTitle
         newNote1.text = noteText1
 
