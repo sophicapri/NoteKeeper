@@ -14,8 +14,7 @@
         <item name="srcCompat">@drawable/ic_baseline_add_circle_24</item>
     </style>
 
-    <style name="Widget.Theme.NoteKeeper.MyView" parent="">
+<!--    <style name="Widget.Theme.NoteKeeper.MyView" parent="">
         <item name="android:background">@color/gray_400</item>
-        <item name="exampleColor">@color/light_blue_400</item>
-    </style>
+    </style>-->
 </resources>

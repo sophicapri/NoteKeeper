@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat.getColor
 
@@ -14,11 +15,11 @@ import androidx.core.content.ContextCompat.getColor
  */
 class ModuleStatusView : View {
     var moduleStatus: BooleanArray = booleanArrayOf()
-    private val spacing = 30f
-    private val shapeSize = 144f
-    private val outlineWidth = 6f
+    private var spacing = 0f
+    private var shapeSize = 0f
+    private var outlineWidth = 0f
     private var moduleRectangles: Array<Rect> = emptyArray()
-    private val outlineColor by lazy { Color.BLACK }
+    private var outlineColor = 0
     private var fillColor = 0
     private lateinit var paintOutline: Paint
     private lateinit var paintFill: Paint
@@ -47,6 +48,13 @@ class ModuleStatusView : View {
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.ModuleStatusView, defStyle, 0
         )
+
+        spacing = 30f
+        shapeSize = 144f
+        outlineWidth = 6f
+        outlineColor = a.getColor(R.styleable.ModuleStatusView_outlineColor, Color.BLACK)
+        fillColor = a.getColor(R.styleable.ModuleStatusView_fillColor, Color.RED)
+
         a.recycle()
 
         paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -64,41 +72,17 @@ class ModuleStatusView : View {
         val middle = EDIT_MODE_MODULE_COUNT / 2
         for (i in 0 until middle) exampleModuleValues[i] = true
         moduleStatus = exampleModuleValues
-        fillColor = Color.RED
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        setupModuleRectangles(w)
-    }
-
-    private fun setupModuleRectangles(width: Int) {
-        val availableWidth = width - paddingStart - paddingEnd
-        val horizontalModulesThatCanFit = (availableWidth / (shapeSize + spacing)).toInt()
-        val maxHorizontalModules = horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
-
-        moduleRectangles = Array(moduleStatus.size) { Rect() }
-        for (moduleIndex in moduleRectangles.indices) {
-            val column = moduleIndex % maxHorizontalModules
-            val row = moduleIndex / maxHorizontalModules
-            val x = paddingStart + column * (shapeSize + spacing).toInt()
-            val y = paddingTop +  row * (shapeSize + spacing).toInt()
-            moduleRectangles[moduleIndex] = Rect(
-                x, y, (x + shapeSize).toInt(), (y + shapeSize).toInt()
-            )
-        }
+        //fillColor = Color.RED
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val specWidth = MeasureSpec.getSize(widthMeasureSpec)
-        val availableWidth = specWidth - paddingStart - paddingEnd
-        val horizontalModulesThatCanFit = (availableWidth / (shapeSize + spacing)).toInt()
-        //maxHorizontalModules = Math.min(horizontalModulesThatCanFit, moduleStatus.size)
-        val maxHorizontalModules = horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
+        val maxHorizontalModules = getMaxHorizontalModules(specWidth)
 
         var desiredWidth: Int = (maxHorizontalModules * (shapeSize + spacing) - spacing).toInt()
         desiredWidth += paddingStart + paddingEnd
 
-        val rows = (moduleStatus.size - 1 ) / maxHorizontalModules + 1
+        val rows = (moduleStatus.size - 1) / maxHorizontalModules + 1
         var desiredHeight: Int = (rows * (shapeSize + spacing) - spacing).toInt()
         desiredHeight += paddingTop + paddingBottom
 
@@ -106,6 +90,31 @@ class ModuleStatusView : View {
         val height = resolveSizeAndState(desiredHeight, heightMeasureSpec, 0)
 
         setMeasuredDimension(width, height)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        setupModuleRectangles(w)
+    }
+
+    private fun setupModuleRectangles(width: Int) {
+        val maxHorizontalModules = getMaxHorizontalModules(width)
+        moduleRectangles = Array(moduleStatus.size) { Rect() }
+        for (moduleIndex in moduleRectangles.indices) {
+            val column = moduleIndex % maxHorizontalModules
+            val row = moduleIndex / maxHorizontalModules
+            val x = paddingStart + column * (shapeSize + spacing).toInt()
+            val y = paddingTop + row * (shapeSize + spacing).toInt()
+            moduleRectangles[moduleIndex] = Rect(
+                x, y, (x + shapeSize).toInt(), (y + shapeSize).toInt()
+            )
+        }
+    }
+
+    private fun getMaxHorizontalModules(width: Int): Int {
+        val availableWidth = width - paddingStart - paddingEnd
+        val horizontalModulesThatCanFit = (availableWidth / (shapeSize + spacing)).toInt()
+        //maxHorizontalModules = Math.min(horizontalModulesThatCanFit, moduleStatus.size)
+        return horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -120,7 +129,40 @@ class ModuleStatusView : View {
         }
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action){
+            MotionEvent.ACTION_DOWN -> return true
+            MotionEvent.ACTION_UP -> {
+                val moduleIndex = findItemAtPoint(event.x, event.y)
+                onModuleSelected(moduleIndex)
+                return true
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
+    private fun findItemAtPoint(x: Float, y: Float): Int {
+        var moduleIndex = INVALID_INDEX
+        for (index in 0..moduleRectangles.size){
+            if (moduleRectangles[index].contains(x.toInt(), y.toInt())) {
+                moduleIndex = index
+                break
+            }
+        }
+        return moduleIndex
+    }
+
+    private fun onModuleSelected(moduleIndex: Int) {
+        if (moduleIndex == INVALID_INDEX)
+            return
+        moduleStatus[moduleIndex] = !moduleStatus[moduleIndex]
+
+        // to update the view
+        invalidate()
+    }
+
     companion object {
         private const val EDIT_MODE_MODULE_COUNT = 7
+        private const val INVALID_INDEX = -1
     }
 }
