@@ -70,4 +70,5 @@
     <string name="backup_notes" translatable="false">Backup notes</string>
     <string name="upload_notes" translatable="false">Upload notes</string>
     <string name="title_activity_note">Edit Note</string>
+    <string name="create_new_note" translatable="false">Create new note</string>
 </resources>

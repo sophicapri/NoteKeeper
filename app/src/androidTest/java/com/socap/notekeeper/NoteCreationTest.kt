@@ -16,6 +16,7 @@ import androidx.test.espresso.Espresso.pressBack
 import org.junit.BeforeClass
 
 import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.contrib.AccessibilityChecks
 
 
 @RunWith(AndroidJUnit4::class)
@@ -28,6 +29,7 @@ class NoteCreationTest {
         fun classSetUp() {
             dm = DataManager.instance
         }
+
     }
 
     @get:Rule
