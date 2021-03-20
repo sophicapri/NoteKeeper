@@ -50,12 +50,16 @@ class ModuleStatusView : View {
             attrs, R.styleable.ModuleStatusView, defStyle, 0
         )
 
-        spacing = 30f
-        shapeSize = 144f
-        outlineWidth = a.getDimension(R.styleable.ModuleStatusView_outlineWidth, 6f)
+        val dm = context.resources.displayMetrics
+        val displayDensity = dm.density
+        val defaultOutlineWidthPixels: Float = displayDensity * DEFAULT_OUTLINE_WIDTH_DP
+
+        outlineWidth = a.getDimension(R.styleable.ModuleStatusView_outlineWidth, defaultOutlineWidthPixels)
         fillColor = a.getColor(R.styleable.ModuleStatusView_fillColor, fillColor)
         outlineColor = a.getColor(R.styleable.ModuleStatusView_outlineColor, Color.BLACK)
         shape = a.getInt(R.styleable.ModuleStatusView_shape, SHAPE_CIRCLE)
+        spacing = 30f
+        shapeSize = 144f
         
         a.recycle()
 
@@ -180,6 +184,7 @@ class ModuleStatusView : View {
     }
 
     companion object {
+        private const val DEFAULT_OUTLINE_WIDTH_DP: Float = 2f
         private const val EDIT_MODE_MODULE_COUNT = 7
         private const val INVALID_INDEX = -1
         private const val SHAPE_CIRCLE = 0
