@@ -23,7 +23,6 @@ class ModuleStatusView : View {
     private lateinit var paintOutline: Paint
     private lateinit var paintFill: Paint
     private val radius by lazy { (shapeSize - outlineWidth) / 2 }
-    private var maxHorizontalModules = 0
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -49,7 +48,6 @@ class ModuleStatusView : View {
             attrs, R.styleable.ModuleStatusView, defStyle, 0
         )
         a.recycle()
-        setupModuleRectangles()
 
         paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
         paintOutline.style = Paint.Style.STROKE
@@ -69,36 +67,33 @@ class ModuleStatusView : View {
         fillColor = Color.RED
     }
 
-    private fun setupModuleRectangles() {
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        setupModuleRectangles(w)
+    }
+
+    private fun setupModuleRectangles(width: Int) {
+        val availableWidth = width - paddingStart - paddingEnd
+        val horizontalModulesThatCanFit = (availableWidth / (shapeSize + spacing)).toInt()
+        val maxHorizontalModules = horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
+
         moduleRectangles = Array(moduleStatus.size) { Rect() }
         for (moduleIndex in moduleRectangles.indices) {
-            val x = paddingStart + moduleIndex * (shapeSize + spacing).toInt()
-            val y = paddingTop
+            val column = moduleIndex % maxHorizontalModules
+            val row = moduleIndex / maxHorizontalModules
+            val x = paddingStart + column * (shapeSize + spacing).toInt()
+            val y = paddingTop +  row * (shapeSize + spacing).toInt()
             moduleRectangles[moduleIndex] = Rect(
                 x, y, (x + shapeSize).toInt(), (y + shapeSize).toInt()
             )
         }
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        moduleRectangles.forEachIndexed { moduleIndex, _ ->
-            val x: Float = moduleRectangles[moduleIndex].centerX().toFloat()
-            val y: Float = moduleRectangles[moduleIndex].centerY().toFloat()
-
-            if (moduleStatus[moduleIndex])
-                canvas.drawCircle(x, y, radius, paintFill)
-            canvas.drawCircle(x, y, radius, paintOutline)
-        }
-    }
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val specWidth = MeasureSpec.getSize(widthMeasureSpec)
         val availableWidth = specWidth - paddingStart - paddingEnd
         val horizontalModulesThatCanFit = (availableWidth / (shapeSize + spacing)).toInt()
         //maxHorizontalModules = Math.min(horizontalModulesThatCanFit, moduleStatus.size)
-        maxHorizontalModules = horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
+        val maxHorizontalModules = horizontalModulesThatCanFit.coerceAtMost(moduleStatus.size)
 
         var desiredWidth: Int = (maxHorizontalModules * (shapeSize + spacing) - spacing).toInt()
         desiredWidth += paddingStart + paddingEnd
@@ -111,6 +106,18 @@ class ModuleStatusView : View {
         val height = resolveSizeAndState(desiredHeight, heightMeasureSpec, 0)
 
         setMeasuredDimension(width, height)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        moduleRectangles.forEachIndexed { moduleIndex, _ ->
+            val x: Float = moduleRectangles[moduleIndex].centerX().toFloat()
+            val y: Float = moduleRectangles[moduleIndex].centerY().toFloat()
+
+            if (moduleStatus[moduleIndex])
+                canvas.drawCircle(x, y, radius, paintFill)
+            canvas.drawCircle(x, y, radius, paintOutline)
+        }
     }
 
     companion object {
