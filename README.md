@@ -5,5 +5,5 @@
 How to :
 - Create a library
 - Use BroadcastReceiver
-- Use an IntentService
+- Use IntentService
 - Create a custom view (Still need to work on that)
