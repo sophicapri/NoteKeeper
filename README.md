@@ -7,5 +7,6 @@ How to :
 - Use BroadcastReceiver
 - Use JobIntentService
 - Create a custom view 
+- Use a ContentProvider
 - Use StrictMode to check thread safety
 - Create and manage a SettingsActivity with Preferences
