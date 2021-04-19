@@ -8,3 +8,4 @@ How to :
 - Use JobIntentService
 - Create a custom view 
 - Use StrictMode to check thread safety
+- Create and manage a SettingsActivity with Preferences
