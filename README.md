@@ -7,3 +7,4 @@ How to :
 - Use BroadcastReceiver
 - Use JobIntentService
 - Create a custom view 
+- Use StrictMode to check thread safety
